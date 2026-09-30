@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AS92027 Revision Activities — Waiheke High School</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          whs: { dark: '#002066', gold: '#c5a059', light: '#d1e6f6', goldtext: '#8b6508' }
+        }
+      }
+    }
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+  :root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body { font-family: 'Manrope', sans-serif; background: #dbe2ea; color: #1e293b; margin: 0; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadein 0.3s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card-btn { text-align: left; transition: all 0.15s; cursor: pointer; }
+  .card-btn:hover, .card-btn:focus-visible { border-color: #c5a059; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+
+  :focus-visible { outline: 3px solid #c5a059; outline-offset: 2px; border-radius: 2px; }
+
+  .tile { cursor: pointer; user-select: none; transition: all 0.15s; }
+  .tile:hover { border-color: #c5a059; background: #fefce8; }
+  .tile.selected { background: #c5a059; color: white; border-color: #8b6508; }
+  .tile.placed { opacity: 0.35; pointer-events: none; }
+  .tile.correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+  .tile.incorrect { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+  .tile.reveal-correct { background: #d1fae5; border-color: #10b981; color: #065f46; animation: pulse-reveal 1.2s ease-in-out infinite; cursor: pointer; }
+  @keyframes pulse-reveal { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 50% { box-shadow: 0 0 0 5px rgba(16,185,129,0); } }
+
+  .slot { min-height: 3.25rem; transition: all 0.15s; }
+  .slot.filled { border-style: solid; }
+  .slot.drop-hover { border-color: #c5a059; background: #fefce8; }
+
+  .speaker-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; border-radius: 9999px; border: 1.5px solid #c5a059; background: #fff; color: #8b6508; flex-shrink: 0; cursor: pointer; transition: all 0.15s; }
+  .speaker-btn:hover { background: #fefce8; }
+  .speaker-btn.speaking { background: #c5a059; color: #fff; animation: pulse-speak 1.2s ease-in-out infinite; }
+  .speaker-btn svg { width: 0.9rem; height: 0.9rem; }
+  .speaker-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  @keyframes pulse-speak { 0%, 100% { box-shadow: 0 0 0 0 rgba(197,160,89,0.5); } 50% { box-shadow: 0 0 0 4px rgba(197,160,89,0); } }
+  .on-dark .speaker-btn { background: rgba(255,255,255,0.1); border-color: #c5a059; color: #c5a059; }
+  .on-dark .speaker-btn:hover { background: rgba(255,255,255,0.2); }
+  .on-dark .speaker-btn.speaking { background: #c5a059; color: #002066; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  @media print {
+    body * { visibility: hidden; }
+    #screen-map, #screen-map *, #screen-commission, #screen-commission * { visibility: visible; }
+    #screen-map { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+    #screen-commission { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+    #map-picker, #map-complete-actions, footer, header { display: none !important; }
+    #screen-map input, #screen-map button, [id^="map-think-"], [id^="map-hints-"] { display: none !important; }
+    [id^="map-fb-"] { display: block !important; }
+    #screen-commission button, #co-pool { display: none !important; }
+    #screen-commission textarea { border: 1px solid #999 !important; }
+  }
+
+  /* Perspective Map diagram connectors */
+  .diagram-trunk { width: 3px; height: 1.75rem; background: #c5a059; margin: 0 auto; }
+  .diagram-branch-wrap { position: relative; padding-top: 0.9rem; }
+  .diagram-branch-bar { position: absolute; top: 0; left: 4%; right: 4%; height: 3px; background: #c5a059; border-radius: 2px; }
+  .diagram-branch-bar-2 { left: 18%; right: 18%; }
+  .diagram-branch-bar-3 { left: 10%; right: 10%; }
+  .diagram-funnel { width: 0; height: 0; margin: 0.4rem auto 0.6rem; border-left: 16px solid transparent; border-right: 16px solid transparent; border-top: 20px solid #c5a059; }
+  #map-shape-row > div, #map-actions-row > div { position: relative; }
+  #map-shape-row > div::before, #map-actions-row > div::before {
+    content: ''; position: absolute; top: -0.9rem; left: 50%; width: 2px; height: 0.9rem; background: #c5a059; transform: translateX(-50%);
+  }
+</style>
+</head>
+<body>
+<div id="app" class="max-w-5xl mx-auto p-4 md:p-8">
+
+  <header class="bg-whs-dark rounded-xl p-6 md:p-8 text-white mb-8 shadow-lg text-center">
+    <div class="mono text-[10px] md:text-xs uppercase tracking-widest text-blue-200 mb-2">Waiheke High School History — AS92027</div>
+    <h1 class="text-3xl md:text-4xl font-black mb-1">Revision Activities</h1>
+    <p class="text-blue-200 text-sm md:text-base">Six ways to test what you know about August 1945</p>
+  </header>
+
+  <div class="flex justify-center gap-3 mb-8 flex-wrap">
+    <a href="index.html" class="mono text-xs font-bold px-4 py-2 rounded-lg bg-white border-2 border-slate-200 text-slate-700 hover:border-whs-gold transition shadow-sm">← Main Dashboard</a>
+    <a href="decision-simulation.html" class="mono text-xs font-bold px-4 py-2 rounded-lg bg-white border-2 border-slate-200 text-slate-700 hover:border-whs-gold transition shadow-sm">🕰️ Decision Room</a>
+  </div>
+
+  <!-- SCREEN: HUB -->
+  <section id="screen-hub" class="screen active">
+    <div class="grid md:grid-cols-2 gap-5">
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="openGame('detective')">
+        <div class="text-3xl mb-2">🔍</div>
+        <h3 class="text-lg font-black text-slate-900 mb-1">Quotes</h3>
+        <p class="text-slate-800 text-sm leading-relaxed">Read a mystery quote or action. Work out who it belongs to, and what it reveals about their perspective.</p>
+      </button>
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="openGame('paragraph')">
+        <div class="text-3xl mb-2">🧩</div>
+        <h3 class="text-lg font-black text-slate-900 mb-1">Build-a-Paragraph</h3>
+        <p class="text-slate-800 text-sm leading-relaxed">Place evidence cards into the right slot — Perspective, Motivation, Action, Evidence, Explanation, Wider Context, Comparison.</p>
+      </button>
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="openGame('timeline')">
+        <div class="text-3xl mb-2">⏱️</div>
+        <h3 class="text-lg font-black text-slate-900 mb-1">Timeline Challenge</h3>
+        <p class="text-slate-800 text-sm leading-relaxed">Put the key events of August 1945 in the right order, against the clock.</p>
+      </button>
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="openGame('map')">
+        <div class="text-3xl mb-2">🗺️</div>
+        <h3 class="text-lg font-black text-slate-900 mb-1">Perspective Map</h3>
+        <p class="text-slate-800 text-sm leading-relaxed">Build the full picture of a person's perspective — values, experience, actions, people and dates — by filling in the diagram.</p>
+      </button>
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="openGame('commission')">
+        <div class="text-3xl mb-2">🤫</div>
+        <h3 class="text-lg font-black text-slate-900 mb-1">Commission or Omission?</h3>
+        <p class="text-slate-800 text-sm leading-relaxed">Sort what each side actually <em>did</em> from what they deliberately <em>didn't</em> do or stayed silent about — a harder, higher-level skill than the other four activities.</p>
+      </button>
+      <div class="card-btn bg-white rounded-xl border-2 border-whs-gold p-6 shadow-sm" id="quiz-hub-card" onclick="tryOpenQuiz()">
+        <div class="text-3xl mb-2" id="quiz-lock-icon">🔒</div>
+        <h3 class="text-lg font-black text-slate-900 mb-1">The Final Quiz</h3>
+        <p class="text-slate-800 text-sm leading-relaxed">50 questions covering the whole topic — names, dates, perspectives and actions. Multiple choice, fill-the-gap and matching. No hints.</p>
+        <p id="quiz-lock-status" class="text-slate-600 text-xs font-bold mt-2">Locked — complete all five activities above first</p>
+        <div class="hidden mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-2" id="quiz-lock-message"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN: EVIDENCE DETECTIVE -->
+  <section id="screen-detective" class="screen">
+    <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 mb-4" onclick="backToHub()">← Back to Activities</button>
+    <div class="bg-whs-dark rounded-xl p-5 text-white mb-6 shadow-md flex justify-between items-center flex-wrap gap-2">
+      <h2 class="text-xl font-black">🔍 Quotes</h2>
+      <span class="mono text-xs bg-white/10 rounded-full px-3 py-1" id="det-progress">Case 1 of 15</span>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-5">
+      <div class="flex justify-between items-center mb-3">
+        <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold">The Evidence</div>
+        <button class="speaker-btn" data-speak="det-quote" onclick="speakElement(this)" aria-label="Read this evidence aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>
+      </div>
+      <blockquote class="text-lg font-bold text-slate-900 italic border-l-4 border-whs-gold pl-4 mb-2" id="det-quote"></blockquote>
+      <p class="text-xs text-slate-700" id="det-quote-type"></p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-5">
+      <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-3">Q1 — Who does this belong to?</div>
+      <div class="grid sm:grid-cols-2 gap-2" id="det-who-options"></div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-5 hidden" id="det-reveals-block">
+      <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-3">Q2 — What does this reveal about their perspective?</div>
+      <div class="space-y-2" id="det-reveals-options"></div>
+    </div>
+
+    <div class="hidden gap-3 items-start bg-slate-50 border border-slate-200 rounded-xl p-5 mb-5" id="det-feedback-wrap">
+      <div class="flex-1" id="det-feedback"></div>
+      <button class="speaker-btn" data-speak="det-feedback" onclick="speakElement(this)" aria-label="Read this explanation aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <span class="mono text-sm text-slate-700" id="det-score"></span>
+        <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 underline" onclick="startDetective(true)">Restart from Case 1</button>
+      </div>
+      <button class="hidden mono text-sm font-bold px-6 py-3 rounded-lg bg-whs-gold text-white shadow-md hover:brightness-110 transition" id="det-next-btn" onclick="detNext()">Next Case →</button>
+    </div>
+  </section>
+
+  <!-- SCREEN: BUILD-A-PARAGRAPH -->
+  <section id="screen-paragraph" class="screen">
+    <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 mb-4" onclick="backToHub()">← Back to Activities</button>
+    <div class="bg-whs-dark rounded-xl p-5 text-white mb-6 shadow-md on-dark">
+      <h2 class="text-xl font-black">🧩 Build-a-Paragraph</h2>
+      <div class="flex items-start gap-3 mt-1">
+        <p class="text-blue-200 text-sm flex-1" id="para-instructions">Click a card, then click the slot it belongs in. Watch for cards that belong to the other person!</p>
+        <button class="speaker-btn" data-speak="para-instructions" onclick="speakElement(this)" aria-label="Read these instructions aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>
+      </div>
+    </div>
+
+    <div id="para-picker" class="grid md:grid-cols-2 gap-5 mb-6">
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="startParagraph('usAdmin')">
+        <div class="mono text-[11px] uppercase tracking-widest text-whs-dark font-bold mb-1">🇺🇸 United States</div>
+        <h3 class="text-lg font-black text-slate-900">Build the US Administration's Paragraph</h3>
+      </button>
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="startParagraph('hirohito')">
+        <div class="mono text-[11px] uppercase tracking-widest text-[#8b0000] font-bold mb-1">🇯🇵 Japanese Leadership</div>
+        <h3 class="text-lg font-black text-slate-900">Build Hirohito's Paragraph</h3>
+      </button>
+    </div>
+
+    <div id="para-game" class="hidden">
+      <div class="grid grid-cols-2 gap-5 mb-5 items-start">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-4">The Paragraph</div>
+          <div class="space-y-3" id="para-slots"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-4">Evidence Cards</div>
+          <div class="grid gap-2" id="para-cards"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center flex-wrap gap-3">
+        <button class="mono text-sm font-bold px-6 py-3 rounded-lg bg-whs-gold text-white shadow-md hover:brightness-110 transition" onclick="checkParagraph()">Check My Paragraph</button>
+        <button class="mono text-sm font-bold px-6 py-3 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300 transition" onclick="document.getElementById('para-picker').classList.remove('hidden'); document.getElementById('para-game').classList.add('hidden');">Choose Different Person</button>
+      </div>
+      <div class="hidden mt-5 bg-slate-50 border border-slate-200 rounded-xl p-5" id="para-feedback"></div>
+    </div>
+  </section>
+
+  <!-- SCREEN: TIMELINE CHALLENGE -->
+  <section id="screen-timeline" class="screen">
+    <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 mb-4" onclick="backToHub()">← Back to Activities</button>
+    <div class="bg-whs-dark rounded-xl p-5 text-white mb-6 shadow-md flex justify-between items-center flex-wrap gap-3">
+      <h2 class="text-xl font-black">⏱️ Timeline Challenge</h2>
+      <span class="mono text-lg bg-white/10 rounded-full px-4 py-1" id="tl-timer">00:00</span>
+    </div>
+
+    <div class="bg-whs-gold/10 border-l-4 border-whs-gold rounded-r-lg p-4 mb-6 text-sm text-slate-800 flex items-start gap-3">
+      <span class="flex-1" id="tl-instructions">Click the events below in the order you think they happened, earliest first. Your list builds on the right. When you've placed all nine, check your answer.</span>
+      <button class="speaker-btn" data-speak="tl-instructions" onclick="speakElement(this)" aria-label="Read these instructions aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-5 mb-6">
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-3">Events (click in order)</div>
+        <div class="space-y-2" id="tl-pool"></div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-3">Your Timeline</div>
+        <ol class="space-y-2 list-decimal list-inside" id="tl-answer"></ol>
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center flex-wrap gap-3">
+      <button class="mono text-sm font-bold px-5 py-3 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300 transition" onclick="startTimeline()">Restart</button>
+      <button class="hidden mono text-sm font-bold px-6 py-3 rounded-lg bg-whs-gold text-white shadow-md hover:brightness-110 transition" id="tl-check-btn" onclick="checkTimeline()">Check My Timeline</button>
+    </div>
+    <div class="hidden mt-5 bg-slate-50 border border-slate-200 rounded-xl p-5" id="tl-feedback"></div>
+  </section>
+
+  <!-- SCREEN: PERSPECTIVE MAP -->
+  <section id="screen-map" class="screen">
+    <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 mb-4" onclick="backToHub()">← Back to Activities</button>
+    <div class="bg-whs-dark rounded-xl p-5 text-white mb-6 shadow-md on-dark">
+      <h2 class="text-xl font-black">🗺️ Perspective Map</h2>
+      <div class="flex items-start gap-3 mt-1">
+        <p class="text-blue-200 text-sm flex-1" id="map-instructions">Fill in every box to build the full picture. Type your own answer, or click Hint for options.</p>
+        <button class="speaker-btn" data-speak="map-instructions" onclick="speakElement(this)" aria-label="Read these instructions aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>
+      </div>
+    </div>
+
+    <div id="map-picker" class="grid md:grid-cols-2 gap-5 mb-6">
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="startMap('usAdmin')">
+        <div class="mono text-[11px] uppercase tracking-widest text-whs-dark font-bold mb-1">🇺🇸 United States</div>
+        <h3 class="text-lg font-black text-slate-900">The US Administration</h3>
+        <p class="text-slate-800 text-sm mt-1">Truman and MacArthur together</p>
+      </button>
+      <button class="card-btn bg-white rounded-xl border-2 border-slate-200 p-6 shadow-sm" onclick="startMap('hirohito')">
+        <div class="mono text-[11px] uppercase tracking-widest text-[#8b0000] font-bold mb-1">🇯🇵 Japan</div>
+        <h3 class="text-lg font-black text-slate-900">Hirohito</h3>
+      </button>
+    </div>
+
+    <div id="map-game" class="hidden">
+      <!-- Central hub, with Position as a side satellite -->
+      <div class="flex justify-center items-center gap-5 mb-1">
+        <div class="bg-whs-dark text-white rounded-full px-8 py-5 text-center font-black text-lg shadow-lg border-4 border-whs-gold" id="map-center-node"></div>
+        <div class="border-t-2 border-dashed border-slate-300 w-10" aria-hidden="true"></div>
+        <div id="map-position-slot" class="w-64"></div>
+      </div>
+
+      <!-- Trunk down to the branch bar -->
+      <div class="diagram-trunk"></div>
+
+      <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-2 text-center">What shapes this perspective</div>
+      <div class="diagram-branch-wrap mb-2">
+        <div class="diagram-branch-bar diagram-branch-bar-3"></div>
+        <div class="grid grid-cols-3 gap-3" id="map-shape-row"></div>
+      </div>
+
+      <!-- Funnel: values, experience and motivation converge into wider circumstances -->
+      <div class="diagram-funnel" aria-hidden="true"></div>
+
+      <div class="flex justify-center mb-2" id="map-circumstances-row"></div>
+
+      <div class="diagram-trunk"></div>
+
+      <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-2 text-center">Key Actions</div>
+      <div class="diagram-branch-wrap mb-6">
+        <div class="diagram-branch-bar diagram-branch-bar-2"></div>
+        <div class="grid grid-cols-2 gap-3" id="map-actions-row"></div>
+      </div>
+
+      <!-- Key People: a separate satellite, not part of the causal chain -->
+      <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 bg-slate-50/60 mb-5">
+        <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-2 text-center">🔗 Key People (connected to this perspective, not a step in the chain)</div>
+        <div class="grid grid-cols-2 gap-3" id="map-people-row"></div>
+      </div>
+
+      <div class="hidden flex-wrap gap-3 mb-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4" id="map-complete-actions">
+        <p class="mono text-xs font-bold text-emerald-800 w-full mb-1">✓ Diagram complete! Save your work:</p>
+        <button class="mono text-xs font-bold px-4 py-2 rounded-lg bg-whs-gold text-white shadow-sm hover:brightness-110 transition" onclick="copyMapDiagram()">📋 Copy Diagram</button>
+        <button class="mono text-xs font-bold px-4 py-2 rounded-lg bg-whs-dark text-white shadow-sm hover:brightness-110 transition" onclick="printMapDiagram()">🖨 Print Diagram</button>
+      </div>
+
+      <div class="flex justify-between items-center flex-wrap gap-3">
+        <span class="mono text-sm text-slate-700" id="map-score"></span>
+        <button class="mono text-sm font-bold px-6 py-3 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300 transition" onclick="document.getElementById('map-picker').classList.remove('hidden'); document.getElementById('map-game').classList.add('hidden');">Choose Different Person</button>
+        <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 underline" onclick="resetMapProgress()">Reset This Diagram</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN: COMMISSION OR OMISSION -->
+  <section id="screen-commission" class="screen">
+    <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 mb-4" onclick="backToHub()">← Back to Activities</button>
+    <div class="bg-whs-dark rounded-xl p-5 text-white mb-6 shadow-md">
+      <h2 class="text-xl font-black">🤫 Commission or Omission?</h2>
+      <p class="text-blue-200 text-sm mt-1">Sort each fact into what they actively DID... or what they deliberately DIDN'T do.</p>
+    </div>
+
+    <div class="bg-whs-gold/10 border-l-4 border-whs-gold rounded-r-lg p-4 mb-6 text-sm text-slate-800 flex items-start gap-3">
+      <span class="flex-1" id="co-instructions">Historians don't just study what people did — sometimes what someone <em>chose not to do</em>, or stayed silent about, reveals just as much about their perspective. Click a card below, then click the bucket it belongs in.</span>
+      <button class="speaker-btn" data-speak="co-instructions" onclick="speakElement(this)" aria-label="Read these instructions aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-5 mb-6">
+      <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-4" onclick="placeInBucket('commission')">
+        <div class="mono text-xs uppercase tracking-widest text-emerald-800 font-bold mb-3 text-center">✅ Acts of Commission</div>
+        <div class="space-y-2 min-h-[80px]" id="co-commission-bucket"></div>
+      </div>
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-xl p-4" onclick="placeInBucket('omission')">
+        <div class="mono text-xs uppercase tracking-widest text-amber-800 font-bold mb-3 text-center">🤫 Acts of Omission</div>
+        <div class="space-y-2 min-h-[80px]" id="co-omission-bucket"></div>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-slate-200 rounded-xl p-5 mb-6">
+      <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-3">Unsorted Facts</div>
+      <div class="grid gap-2" id="co-pool"></div>
+    </div>
+
+    <div class="flex justify-between items-center flex-wrap gap-3 mb-6">
+      <span class="mono text-sm text-slate-700" id="co-score"></span>
+      <div class="flex gap-3">
+        <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 underline" onclick="resetCOProgress()">Reset Sorting</button>
+        <button class="mono text-sm font-bold px-6 py-3 rounded-lg bg-whs-gold text-white shadow-md hover:brightness-110 transition" onclick="checkCommissionOmission()">Check My Sorting</button>
+      </div>
+    </div>
+
+    <div class="hidden bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6" id="co-feedback"></div>
+
+    <div class="hidden bg-white border-2 border-slate-200 rounded-xl p-6" id="co-reflection">
+      <div class="mono text-xs uppercase tracking-widest text-whs-goldtext font-bold mb-3">Reflection</div>
+      <p class="text-sm text-slate-800 mb-3">Pick one Act of Omission from above and explain how leaving it out shaped how this event is remembered.</p>
+      <textarea class="w-full border border-slate-300 rounded-lg p-3 text-sm" rows="4" id="co-reflection-text" placeholder="Type your reflection here..."></textarea>
+      <div class="flex gap-3 mt-3">
+        <button class="mono text-xs font-bold px-4 py-2 rounded-lg bg-whs-gold text-white" onclick="copyReflection()">📋 Copy Reflection</button>
+        <button class="mono text-xs font-bold px-4 py-2 rounded-lg bg-whs-dark text-white" onclick="printReflection()">🖨 Print Reflection</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN: FINAL QUIZ -->
+  <section id="screen-quiz" class="screen">
+    <button class="mono text-xs font-bold text-slate-700 hover:text-slate-800 mb-4" onclick="backToHub()">← Back to Activities</button>
+    <div class="bg-whs-dark rounded-xl p-5 text-white mb-6 shadow-md flex justify-between items-center flex-wrap gap-2">
+      <h2 class="text-xl font-black">🏆 The Final Quiz</h2>
+      <span class="mono text-xs bg-white/10 rounded-full px-3 py-1" id="fq-progress">Question 1 of 50</span>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-5">
+      <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-3" id="fq-type-label"></div>
+      <div class="text-lg font-bold text-slate-900 mb-4" id="fq-question"></div>
+      <div id="fq-answer-area"></div>
+    </div>
+
+    <div class="hidden bg-slate-50 border border-slate-200 rounded-xl p-5 mb-5" id="fq-feedback"></div>
+
+    <div class="flex justify-between items-center flex-wrap gap-3">
+      <span class="mono text-sm text-slate-700" id="fq-score"></span>
+      <button class="hidden mono text-sm font-bold px-6 py-3 rounded-lg bg-whs-gold text-white shadow-md hover:brightness-110 transition" id="fq-next-btn" onclick="fqNext()">Next Question →</button>
+    </div>
+  </section>
+
+  <!-- MODAL: QUIZ RESULT -->
+  <div class="hidden fixed inset-0 bg-black/60 z-50 items-center justify-center p-4" id="fq-result-modal">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
+      <div class="text-5xl mb-3">🎉</div>
+      <h2 class="text-2xl font-black text-slate-900 mb-2">Congratulations!</h2>
+      <p class="text-slate-700 mb-1">You've completed The Final Quiz.</p>
+      <div class="my-6">
+        <div class="text-5xl font-black text-whs-dark" id="fq-result-percent"></div>
+        <div class="mono text-sm text-slate-600 mt-1" id="fq-result-raw"></div>
+      </div>
+      <div class="flex flex-col gap-3">
+        <button class="mono text-sm font-bold px-6 py-3 rounded-lg bg-whs-gold text-white shadow-md hover:brightness-110 transition" onclick="retakeFinalQuiz()">🔁 Retake the Quiz</button>
+        <button class="mono text-sm font-bold px-6 py-3 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300 transition" onclick="closeFinalQuizModal()">Back to Activities</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Individual game screens get inserted here by later edits -->
+
+  <footer class="mt-10 pt-6 border-t border-slate-300 text-center mono text-[10px] uppercase tracking-wider text-slate-700 leading-loose">
+    Revision activities for AS92027 · Waiheke High School History Department
+  </footer>
+
+</div>
+
+<script>
+// ============================================================
+// GAME 1: EVIDENCE DETECTIVE
+// ============================================================
+const ALL_PEOPLE = ["Truman", "Stimson", "Byrnes", "The Potsdam Declaration", "MacArthur", "Hirohito", "Suzuki", "Admiral Leahy", "Manhattan Project Scientists"];
+
+const DETECTIVE_CASES = [
+  {
+    quote: "The alternative for Japan is prompt and utter destruction.",
+    type: "A direct quotation",
+    who: "The Potsdam Declaration",
+    reveals: ["The Allies threatened total destruction to force Japan's surrender", "Japan was quietly offered a negotiated peace with several conditions", "The US had privately decided against ever using the atomic bomb", "This was a confidential cable, not a public statement to Japan"],
+    revealsCorrect: 0,
+    explanation: "This is from the Potsdam Declaration (26 July 1945) — a public ultimatum from the US, Britain and China threatening total destruction unless Japan surrendered unconditionally."
+  },
+  {
+    quote: "...expect a rain of ruin from the air...",
+    type: "A direct quotation",
+    who: "Truman",
+    reveals: ["Truman was warning of continued destruction unless Japan surrendered", "Truman was formally apologising for the bombing of Hiroshima", "Truman was describing a natural disaster unrelated to the war", "Truman was addressing a warning to the Soviet Union, not Japan"],
+    revealsCorrect: 0,
+    explanation: "Truman warned Japan of a \u201crain of ruin from the air\u201d on 6 August 1945 — a threat of continued destruction unless Japan surrendered."
+  },
+  {
+    quote: "...enduring the unendurable and suffering what is insufferable.",
+    type: "A direct quotation",
+    who: "Hirohito",
+    reveals: ["He framed surrender as a painful sacrifice, not a humiliating defeat", "He was describing the bombing of Hiroshima in graphic detail", "He was formally refusing to accept the Potsdam Declaration", "He was placing all the blame on the military for starting the war"],
+    revealsCorrect: 0,
+    explanation: "From the Jewel Voice Broadcast (15 August 1945) — Hirohito framed surrender as a dignified sacrifice for the nation's survival, not simple defeat."
+  },
+  {
+    quote: "...it would lead to the total extinction of human civilization.",
+    type: "A direct quotation",
+    who: "Hirohito",
+    reveals: ["He feared continuing the war risked Japan's complete annihilation", "He was praising the continued effectiveness of Japan's military", "He was describing the long-term aims of the Allied powers", "He was referring to a natural disaster unrelated to the war"],
+    revealsCorrect: 0,
+    explanation: "Also from the Jewel Voice Broadcast — Hirohito directly referenced the atomic bombs and the risk of total destruction if Japan fought on."
+  },
+  {
+    quote: "Argued that keeping the Emperor's symbolic role would make Japan's surrender faster and more orderly.",
+    type: "A documented position (not a direct quote)",
+    who: "Stimson",
+    reveals: ["Some in the administration believed concessions could end the war faster", "The administration was fully united on removing the Emperor entirely", "This person opposed using the atomic bomb under any circumstances", "This was actually Japan's own official negotiating position"],
+    revealsCorrect: 0,
+    explanation: "Secretary of War Henry Stimson argued for retaining the Emperor's symbolic role — showing the US Administration wasn't fully united on every detail, even while agreeing on the goal of ending militarism."
+  },
+  {
+    quote: "Responded to the Potsdam Declaration with the ambiguous word \u201cmokusatsu\u201d rather than a clear acceptance or rejection.",
+    type: "A documented action",
+    who: "Suzuki",
+    reveals: ["Japan's government was divided and reluctant to give a clear answer", "Japan had already secretly agreed to accept full surrender", "The Allies had not yet issued any formal ultimatum to Japan", "This statement was actually a formal declaration of war"],
+    revealsCorrect: 0,
+    explanation: "Prime Minister Suzuki's ambiguous \u201cmokusatsu\u201d comment reflected a government still deeply divided between those wanting peace and hardliners wanting to fight on."
+  },
+  {
+    quote: "Chose to retain Emperor Hirohito rather than push for his prosecution as a war criminal.",
+    type: "A documented decision",
+    who: "MacArthur",
+    reveals: ["He believed stability mattered more than punishing Japan's leaders", "He believed the Emperor should be executed as soon as possible", "He had no real authority over any decisions regarding Japan", "This particular decision was actually made by Hirohito himself"],
+    revealsCorrect: 0,
+    explanation: "As Supreme Commander for the Allied Powers, MacArthur argued to retain Hirohito, believing his cooperation was essential to a stable, peaceful occupation."
+  },
+  {
+    quote: "Broke a roughly 70-year tradition of imperial political silence to personally end a government deadlock.",
+    type: "A documented action",
+    who: "Hirohito",
+    reveals: ["The crisis was severe enough to override generations of precedent", "This was a routine, expected action for any Emperor to take", "This intervention happened before the atomic bombings occurred", "This shows the Emperor held unlimited political power at all times"],
+    revealsCorrect: 0,
+    explanation: "Hirohito's direct intervention in the deadlocked Big Six council (9\u201310 August) broke decades of Meiji-era tradition — showing just how severe the crisis had become."
+  },
+  {
+    quote: "Believed the atomic bombings were militarily unnecessary and morally questionable.",
+    type: "A documented view (not a direct quote)",
+    who: "Admiral Leahy",
+    reveals: ["The US Administration was not fully unified on whether the bombs were needed", "This was the official position of the entire US government", "This person believed Japan should never be allowed to surrender", "This person was actually a member of Japan's war council"],
+    revealsCorrect: 0,
+    explanation: "Admiral William Leahy and General Dwight Eisenhower both argued the atomic bombs were unnecessary, believing Japan was already close to defeat — real evidence of internal disagreement within the US Administration."
+  },
+  {
+    quote: "Renounced the traditional claim to divine status, at the direction of the US occupation.",
+    type: "A documented action (1 January 1946)",
+    who: "Hirohito",
+    reveals: ["He formally gave up his claim to being a living god, as part of postwar reforms", "He declared himself the sole ruler of a new Japanese empire", "He announced this at the same moment as the original surrender broadcast", "This was a demand made by the Soviet Union, not the United States"],
+    revealsCorrect: 0,
+    explanation: "In the Humanity Declaration (1 January 1946), Hirohito renounced the idea that the Emperor was divine — a major condition of the US-led occupation and a step toward Japan's new constitutional monarchy."
+  },
+  {
+    quote: "Built the atomic bomb, though several of them later argued for a demonstration rather than a direct strike on a city.",
+    type: "A documented group",
+    who: "Manhattan Project Scientists",
+    reveals: ["Even the scientists who built the bomb were divided on how it should be used", "They had no opinion at all on how the bomb should be used", "They insisted the bomb be used on Tokyo specifically", "They refused to let the US government use the weapon at all"],
+    revealsCorrect: 0,
+    explanation: "Some Manhattan Project scientists (in the Franck Report) argued for a demonstration strike rather than a direct attack on a city — showing that even those who built the bomb weren't unanimous about how to use it."
+  },
+  {
+    quote: "Prosecuted 28 Japanese military and political leaders, executing seven of them.",
+    type: "A documented process (1946\u20131948)",
+    who: "MacArthur",
+    reveals: ["The occupation held wartime leaders accountable, while deliberately sparing the Emperor", "This trial process was purely symbolic, with no genuine legal consequences at all", "This whole process took place well before Japan had formally surrendered", "This was carried out entirely by the Soviet Union, not by the United States"],
+    revealsCorrect: 0,
+    explanation: "The Tokyo Trials (1946\u20131948), held under MacArthur's occupation authority, prosecuted 28 Japanese leaders \u2014 but notably did not include Hirohito, who was deliberately shielded from prosecution."
+  },
+  {
+    quote: "The Japanese people forever renounce war... armed forces will never be maintained.",
+    type: "A direct quotation (Article 9, 1947 Constitution)",
+    who: "MacArthur",
+    reveals: ["The new constitution permanently renounced Japan's right to wage war", "This confirmed Japan would keep its full wartime military intact", "This clause was written entirely by Emperor Hirohito himself", "This clause was quietly removed before the constitution was finalised"],
+    revealsCorrect: 0,
+    explanation: "Article 9 of Japan's 1947 Constitution, drafted under the US occupation, permanently renounced war and the maintenance of armed forces \u2014 one of the most significant lasting changes of the entire occupation."
+  },
+  {
+    quote: "Studied the effects of radiation on atomic bomb survivors, though it was controversial for not providing medical treatment.",
+    type: "A documented US body",
+    who: "Truman",
+    reveals: ["It studied survivors' injuries without offering them medical care, drawing real criticism", "It provided completely free medical treatment to every single survivor it studied", "It was created entirely by Japan's own government, not by the United States", "It was fully established years before the atomic bombs were ever used"],
+    revealsCorrect: 0,
+    explanation: "The Atomic Bomb Casualty Commission (ABCC) studied radiation's effects on Hiroshima and Nagasaki survivors \u2014 but its refusal to provide medical treatment to those it studied made it deeply controversial."
+  },
+  {
+    quote: "Toured the country extensively after the war, shifting his public image from military leader to peaceful, approachable monarch.",
+    type: "A documented pattern of action (post-1945)",
+    who: "Hirohito",
+    reveals: ["This helped reshape how the Japanese public saw the Emperor after the surrender", "This touring actually happened well before the war had even ended", "This whole strategy was devised entirely by the Soviet Union", "This action led directly to Japan fully re-arming its military"],
+    revealsCorrect: 0,
+    explanation: "In the years after the surrender, Hirohito undertook nationwide tours that helped transform his public image from wartime figurehead to a peaceful constitutional monarch \u2014 part of the broader reshaping of the imperial role."
+  }
+];
+
+let detState = { index: 0, score: 0, whoAnswered: false, whoCorrect: false };
+
+function startDetective(forceRestart) {
+  const saved = !forceRestart && loadDetectiveProgress();
+  if (saved && saved.index > 0 && saved.index < DETECTIVE_CASES.length) {
+    detState = { index: saved.index, score: saved.score, whoAnswered: false, whoCorrect: false };
+  } else {
+    detState = { index: 0, score: 0, whoAnswered: false, whoCorrect: false };
+  }
+  renderDetectiveCase();
+}
+
+function saveDetectiveProgress() {
+  safeStorage.set('sg_detective_progress', JSON.stringify({ index: detState.index, score: detState.score }));
+}
+
+function loadDetectiveProgress() {
+  const raw = safeStorage.get('sg_detective_progress');
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (e) { return null; }
+}
+
+function renderDetectiveCase() {
+  const c = DETECTIVE_CASES[detState.index];
+  detState.whoAnswered = false;
+  $('det-progress').textContent = `Case ${detState.index + 1} of ${DETECTIVE_CASES.length}`;
+  $('det-quote').textContent = `\u201c${c.quote}\u201d`;
+  $('det-quote-type').textContent = c.type;
+  $('det-feedback-wrap').classList.add('hidden');
+  $('det-feedback-wrap').classList.remove('flex');
+  $('det-reveals-block').classList.add('hidden');
+  $('det-next-btn').classList.add('hidden');
+  $('det-score').textContent = `Score: ${detState.score} / ${DETECTIVE_CASES.length}`;
+
+  const whoWrap = $('det-who-options');
+  whoWrap.innerHTML = '';
+  // Build option set: correct answer + 3 random distractors from ALL_PEOPLE
+  const distractors = ALL_PEOPLE.filter(p => p !== c.who).sort(() => Math.random() - 0.5).slice(0, 3);
+  const options = [c.who, ...distractors].sort(() => Math.random() - 0.5);
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'tile bg-white border-2 border-slate-200 rounded-lg p-3 text-sm font-bold text-slate-800';
+    btn.textContent = opt;
+    btn.onclick = () => answerWho(opt, c, btn);
+    whoWrap.appendChild(btn);
+  });
+
+  const revealsWrap = $('det-reveals-options');
+  revealsWrap.innerHTML = '';
+  const correctRevealText = c.reveals[c.revealsCorrect];
+  const shuffledReveals = [...c.reveals].sort(() => Math.random() - 0.5);
+  shuffledReveals.forEach(text => {
+    const btn = document.createElement('button');
+    btn.className = 'tile w-full text-left bg-white border-2 border-slate-200 rounded-lg p-3 text-sm text-slate-800';
+    btn.textContent = text;
+    btn.onclick = () => answerReveals(text, correctRevealText, c, btn);
+    revealsWrap.appendChild(btn);
+  });
+}
+
+function answerWho(chosen, c, btnEl) {
+  if (detState.whoAnswered) return;
+  detState.whoAnswered = true;
+  detState.whoCorrect = (chosen === c.who);
+  document.querySelectorAll('#det-who-options .tile').forEach(b => {
+    b.classList.add('placed');
+    if (b.textContent === c.who) b.classList.add('correct');
+    else if (b === btnEl) b.classList.add('incorrect');
+  });
+  $('det-reveals-block').classList.remove('hidden');
+}
+
+function answerReveals(chosenText, correctText, c, btnEl) {
+  document.querySelectorAll('#det-reveals-options .tile').forEach(b => {
+    b.classList.add('placed');
+    if (b.textContent === correctText) b.classList.add('correct');
+    else if (b === btnEl) b.classList.add('incorrect');
+  });
+
+  const bothCorrect = detState.whoCorrect && chosenText === correctText;
+  if (bothCorrect) detState.score++;
+
+  const fb = $('det-feedback');
+  $('det-feedback-wrap').classList.remove('hidden');
+  $('det-feedback-wrap').classList.add('flex');
+  fb.innerHTML = `
+    <div class="mono text-[10px] uppercase tracking-widest font-bold mb-2 ${bothCorrect ? 'text-emerald-700' : 'text-amber-700'}">${bothCorrect ? '✓ Case Solved' : 'Not Quite'}</div>
+    <p class="text-sm text-slate-800 leading-relaxed"><strong>${c.who}.</strong> ${c.explanation}</p>
+  `;
+  $('det-score').textContent = `Score: ${detState.score} / ${DETECTIVE_CASES.length}`;
+  $('det-next-btn').classList.remove('hidden');
+  $('det-next-btn').textContent = detState.index >= DETECTIVE_CASES.length - 1 ? 'See Final Score →' : 'Next Case →';
+}
+
+function detNext() {
+  if (detState.index >= DETECTIVE_CASES.length - 1) {
+    safeStorage.remove('sg_detective_progress');
+    safeStorage.set('sg_detective_all_done', 'true');
+    const fb = $('det-feedback');
+    fb.innerHTML = `<div class="text-center"><div class="text-3xl mb-2">🔍</div><h3 class="text-xl font-black text-slate-900 mb-2">Case Files Closed</h3><p class="text-slate-800">You solved ${detState.score} of ${DETECTIVE_CASES.length} cases correctly.</p></div>`;
+    $('det-who-options').innerHTML = '';
+    $('det-reveals-block').classList.add('hidden');
+    $('det-quote').textContent = '';
+    $('det-quote-type').textContent = '';
+    $('det-next-btn').classList.add('hidden');
+    return;
+  }
+  detState.index++;
+  saveDetectiveProgress();
+  renderDetectiveCase();
+}
+
+// ============================================================
+// GAME 2: BUILD-A-PARAGRAPH
+// ============================================================
+const SLOT_LABELS = ["Perspective", "Motivation", "Action", "Evidence", "Explanation", "Wider Context", "Comparison"];
+
+const PARAGRAPH_CONTENT = {
+  usAdmin: {
+    label: "The US Administration",
+    cards: {
+      "Perspective": "The US Administration believed Japanese militarism had to be permanently eliminated, and that only unconditional surrender could guarantee lasting security.",
+      "Motivation": "Avoiding the projected 132,000+ US casualties of a land invasion (Operation Downfall), and ending the war as swiftly as possible.",
+      "Action": "Issued the Potsdam Declaration (July 26), authorised the atomic bombs on Hiroshima and Nagasaki, and drafted the deliberately ambiguous Byrnes Note (Aug 11).",
+      "Evidence": "\u201cUnconditional Surrender,\u201d Potsdam Declaration (July 26), 132,000+ projected casualties (Operation Downfall), Truman's \u201crain of ruin\u201d, the Byrnes Note.",
+      "Explanation": "This shows the US saw victory over militarism, not just an end to fighting, as the real goal \u2014 the Byrnes Note deliberately left the Emperor's future status vague, using it as leverage to force compliance.",
+      "Wider Context": "Historians debate this. Some emphasise avoiding invasion casualties as Truman's main driver; others argue that limiting Soviet influence in the Pacific (the USSR invaded Manchuria on Aug 8) ahead of the emerging Cold War also shaped the decision.",
+      "Comparison": "How was this different from Hirohito's perspective? The US acted externally and decisively \u2014 through weapons and declarations \u2014 to force change. Hirohito, in contrast, acted internally, intervening within his own government rather than continuing the fight."
+    }
+  },
+  hirohito: {
+    label: "Hirohito",
+    cards: {
+      "Perspective": "Emperor Hirohito believed the survival of the Kokutai (Imperial system) mattered more than continuing to fight.",
+      "Motivation": "Preventing the total destruction of Japan and a possible domestic revolution caused by famine and firebombing.",
+      "Action": "Intervened to break the 3-3 \u201cBig Six\u201d deadlock (Aug 9-10) and delivered the \u201cJewel Voice Broadcast\u201d announcing surrender directly to the public (Aug 15).",
+      "Evidence": "Kokutai, breaking the 3-3 \u201cBig Six\u201d stalemate (Aug 9-10), \u201cannihilation of the Japanese people\u201d, the \u201cJewel Voice Broadcast\u201d (Aug 15).",
+      "Explanation": "This shows Hirohito prioritised the survival of the Imperial institution over continuing the war \u2014 his direct intervention broke a centuries-old tradition of Emperors staying out of politics, showing how serious the threat had become.",
+      "Wider Context": "The atomic bombings and the Soviet Union's invasion of Manchuria (Aug 8) together gave Hirohito grounds to override military hardliners like Anami \u2014 historians differ on which factor weighed more heavily in his decision.",
+      "Comparison": "How was this different from the US perspective? Where the US used external, decisive action to force an outcome, Hirohito acted quietly within his own government \u2014 sacrificing military pride, not lives, to protect what he valued most."
+    }
+  }
+};
+
+let paraState = { person: null, selectedCard: null, placements: {} }; // placements: { slotLabel: cardKey }
+
+function startParagraph(person) {
+  paraState = { person, selectedCard: null, placements: {} };
+  $('para-picker').classList.add('hidden');
+  $('para-game').classList.remove('hidden');
+  $('para-feedback').classList.add('hidden');
+
+  const slotsWrap = $('para-slots');
+  slotsWrap.innerHTML = '';
+  SLOT_LABELS.forEach(label => {
+    const row = document.createElement('div');
+    row.className = 'flex flex-col gap-1.5';
+    row.innerHTML = `
+      <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold">${label}</div>
+      <div class="slot border-2 border-dashed border-slate-300 rounded-lg p-3 text-sm text-slate-600 italic" data-slot="${label}" onclick="placeInSlot('${label}')">Click a card, then click here</div>
+    `;
+    slotsWrap.appendChild(row);
+  });
+
+  // Build shuffled card pool: this person's 7 correct + 3 distractors from the other person
+  const other = person === 'usAdmin' ? 'hirohito' : 'usAdmin';
+  const mine = PARAGRAPH_CONTENT[person].cards;
+  const theirs = PARAGRAPH_CONTENT[other].cards;
+  const distractorLabels = SLOT_LABELS.sort(() => Math.random() - 0.5).slice(0, 3);
+
+  const cardPool = [];
+  SLOT_LABELS.forEach(label => cardPool.push({ key: person + '::' + label, text: mine[label], correctSlot: label, isDistractor: false }));
+  distractorLabels.forEach(label => cardPool.push({ key: other + '::' + label, text: theirs[label], correctSlot: label, isDistractor: true }));
+  cardPool.sort(() => Math.random() - 0.5);
+
+  const cardsWrap = $('para-cards');
+  cardsWrap.innerHTML = '';
+  cardPool.forEach(card => {
+    const btn = document.createElement('button');
+    btn.className = 'tile text-left bg-white border-2 border-slate-200 rounded-lg p-3 text-xs text-slate-800 leading-relaxed';
+    btn.textContent = card.text;
+    btn.dataset.key = card.key;
+    btn.onclick = () => selectCard(card.key, btn);
+    cardsWrap.appendChild(btn);
+  });
+
+  paraState.cardPool = cardPool;
+}
+
+function selectCard(key, btnEl) {
+  if (btnEl.classList.contains('placed')) return;
+  document.querySelectorAll('#para-cards .tile').forEach(b => b.classList.remove('selected'));
+  if (paraState.selectedCard === key) {
+    paraState.selectedCard = null;
+  } else {
+    paraState.selectedCard = key;
+    btnEl.classList.add('selected');
+  }
+}
+
+function placeInSlot(slotLabel) {
+  if (!paraState.selectedCard) return;
+  const key = paraState.selectedCard;
+
+  // If this slot already has a card, return it to the pool first
+  const previousKey = paraState.placements[slotLabel];
+  if (previousKey) {
+    const prevBtn = document.querySelector(`#para-cards .tile[data-key="${CSS.escape(previousKey)}"]`);
+    if (prevBtn) prevBtn.classList.remove('placed');
+  }
+
+  paraState.placements[slotLabel] = key;
+  const card = paraState.cardPool.find(c => c.key === key);
+  const slotEl = document.querySelector(`.slot[data-slot="${CSS.escape(slotLabel)}"]`);
+  slotEl.textContent = card.text;
+  slotEl.classList.remove('text-slate-600', 'italic');
+  slotEl.classList.add('filled', 'text-slate-800', 'font-medium');
+
+  const cardBtn = document.querySelector(`#para-cards .tile[data-key="${CSS.escape(key)}"]`);
+  cardBtn.classList.add('placed');
+  cardBtn.classList.remove('selected');
+  paraState.selectedCard = null;
+}
+
+function checkParagraph() {
+  safeStorage.set('sg_paragraph_done_' + paraState.person, 'true');
+  let correctCount = 0;
+  SLOT_LABELS.forEach(label => {
+    const placedKey = paraState.placements[label];
+    const slotEl = document.querySelector(`.slot[data-slot="${CSS.escape(label)}"]`);
+    slotEl.classList.remove('border-emerald-500', 'border-red-500', 'border-dashed');
+    slotEl.classList.add('border-solid');
+    if (!placedKey) {
+      slotEl.classList.add('border-slate-300');
+      return;
+    }
+    const card = paraState.cardPool.find(c => c.key === placedKey);
+    const isCorrect = card.correctSlot === label && !card.isDistractor;
+    if (isCorrect) {
+      correctCount++;
+      slotEl.classList.add('border-emerald-500');
+    } else {
+      slotEl.classList.add('border-red-500');
+    }
+  });
+
+  const fb = $('para-feedback');
+  fb.classList.remove('hidden');
+  const allCorrect = correctCount === SLOT_LABELS.length;
+  fb.innerHTML = `
+    <div class="mono text-[10px] uppercase tracking-widest font-bold mb-2 ${allCorrect ? 'text-emerald-700' : 'text-amber-700'}">${allCorrect ? '✓ Perfect Paragraph' : 'Score: ' + correctCount + ' / ' + SLOT_LABELS.length}</div>
+    <p class="text-sm text-slate-800 leading-relaxed">${allCorrect ? 'Every card is in the right slot — this reads as a genuine Excellence-level paragraph structure.' : 'Green slots are correct. Red slots either have the wrong card, or a card that actually belongs to the other person\u2019s paragraph. Try swapping those out.'}</p>
+  `;
+}
+
+// ============================================================
+// GAME 3: TIMELINE CHALLENGE
+// ============================================================
+const TIMELINE_EVENTS = [
+  { id: 1, date: "26 July 1945", text: "The Potsdam Declaration is issued, demanding unconditional surrender." },
+  { id: 2, date: "6 August 1945", text: "The atomic bomb is dropped on Hiroshima." },
+  { id: 3, date: "8 August 1945", text: "The Soviet Union declares war on Japan and invades Manchuria." },
+  { id: 4, date: "9 August 1945", text: "The atomic bomb is dropped on Nagasaki." },
+  { id: 5, date: "9\u201310 August 1945", text: "Hirohito personally intervenes to break the Big Six deadlock." },
+  { id: 6, date: "11 August 1945", text: "The US sends the ambiguous Byrnes Note." },
+  { id: 7, date: "14\u201315 August 1945", text: "The Ky\u016bj\u014d incident (attempted coup) and the Jewel Voice Broadcast." },
+  { id: 8, date: "2 September 1945", text: "Japan's formal surrender is signed aboard USS Missouri." },
+  { id: 9, date: "27 September 1945", text: "Hirohito and MacArthur meet for the first time." }
+];
+
+let tlState = { placed: [], startTime: null, timerInterval: null };
+
+function startTimeline() {
+  clearInterval(tlState.timerInterval);
+  tlState = { placed: [], startTime: Date.now(), timerInterval: null };
+  $('tl-feedback').classList.add('hidden');
+  $('tl-check-btn').classList.add('hidden');
+
+  const shuffled = [...TIMELINE_EVENTS].sort(() => Math.random() - 0.5);
+  const pool = $('tl-pool');
+  pool.innerHTML = '';
+  shuffled.forEach(ev => {
+    const btn = document.createElement('button');
+    btn.className = 'tile w-full text-left bg-white border-2 border-slate-200 rounded-lg p-3 text-sm text-slate-800';
+    btn.textContent = ev.text;
+    btn.dataset.id = ev.id;
+    btn.onclick = () => pickTimelineEvent(ev.id, btn);
+    pool.appendChild(btn);
+  });
+  $('tl-answer').innerHTML = '';
+
+  tlState.timerInterval = setInterval(updateTimer, 500);
+}
+
+function updateTimer() {
+  const secs = Math.floor((Date.now() - tlState.startTime) / 1000);
+  const m = String(Math.floor(secs / 60)).padStart(2, '0');
+  const s = String(secs % 60).padStart(2, '0');
+  $('tl-timer').textContent = `${m}:${s}`;
+}
+
+function pickTimelineEvent(id, btnEl) {
+  if (btnEl.classList.contains('placed')) return;
+  btnEl.classList.add('placed');
+  tlState.placed.push(id);
+
+  const ev = TIMELINE_EVENTS.find(e => e.id === id);
+  const li = document.createElement('li');
+  li.className = 'text-sm text-slate-800 bg-slate-50 rounded-lg p-2';
+  li.textContent = ev.text;
+  $('tl-answer').appendChild(li);
+
+  if (tlState.placed.length === TIMELINE_EVENTS.length) {
+    clearInterval(tlState.timerInterval);
+    $('tl-check-btn').classList.remove('hidden');
+  }
+}
+
+function checkTimeline() {
+  safeStorage.set('sg_timeline_done', 'true');
+  const correctOrder = TIMELINE_EVENTS.map(e => e.id); // already defined in correct order
+  let correctCount = 0;
+  const items = document.querySelectorAll('#tl-answer li');
+  tlState.placed.forEach((id, i) => {
+    const isCorrect = id === correctOrder[i];
+    if (isCorrect) correctCount++;
+    items[i].classList.add(isCorrect ? 'bg-emerald-50' : 'bg-red-50');
+    items[i].classList.remove('bg-slate-50');
+    items[i].style.borderLeft = isCorrect ? '4px solid #10b981' : '4px solid #ef4444';
+  });
+
+  const fb = $('tl-feedback');
+  fb.classList.remove('hidden');
+  const time = $('tl-timer').textContent;
+  const allCorrect = correctCount === TIMELINE_EVENTS.length;
+  let html = `<div class="mono text-[10px] uppercase tracking-widest font-bold mb-2 ${allCorrect ? 'text-emerald-700' : 'text-amber-700'}">${allCorrect ? '✓ Perfect Timeline' : correctCount + ' of ' + TIMELINE_EVENTS.length + ' in the right position'} — Time: ${time}</div>`;
+  if (!allCorrect) {
+    html += '<p class="text-sm text-slate-800 leading-relaxed mb-3">Here\u2019s the correct order:</p><ol class="list-decimal list-inside space-y-1 text-sm text-slate-800">' +
+      TIMELINE_EVENTS.map(e => `<li><strong>${e.date}:</strong> ${e.text}</li>`).join('') + '</ol>';
+  }
+  fb.innerHTML = html;
+}
+
+// ============================================================
+// GAME 4: PERSPECTIVE MAP
+// ============================================================
+const MAP_CONTENT = {
+  usAdmin: {
+    label: "The US Administration",
+    values: { answer: "The \u201cUnconditional Surrender\u201d doctrine and Roosevelt's Four Freedoms", keywords: ["unconditional surrender", "four freedoms", "doctrine", "democra"],
+      hints: ["Unconditional Surrender doctrine and Roosevelt's Four Freedoms", "Expanding American territory across the Pacific islands", "Encouraging religious conversion throughout wartime Japan", "Personal revenge for the attack on Pearl Harbor alone"] },
+    experience: { answer: "Losses at Iwo Jima and Okinawa, and Truman's own WWI service", keywords: ["iwo jima", "okinawa", "wwi", "world war one", "pacific"],
+      hints: ["Losses at Iwo Jima and Okinawa, and Truman's own WWI service", "Growing up in Japan during the early twentieth century", "Personally negotiating the Treaty of Versailles in 1919", "Commanding Japanese forces in the Pacific theatre"] },
+    position: { answer: "The President and Cabinet in Washington, plus the Pacific commander", keywords: ["president", "cabinet", "commander", "washington", "supreme commander"],
+      hints: ["The President and Cabinet in Washington, plus the Pacific commander", "The Emperor and his full war council based in Tokyo, Japan", "The ruling Soviet Politburo, based in Moscow, Russia", "The British War Cabinet, based in London, England"] },
+    circumstances: { answer: "Germany's surrender and cooling relations with the Soviet Union", keywords: ["germany", "soviet", "cold war"],
+      hints: ["Germany's surrender and cooling relations with the Soviet Union", "Japan's economy was booming throughout the war", "The US had only just entered the war effort", "Britain had already surrendered to Germany"] },
+    motivation: { answer: "Saving American lives \u2014 avoiding an invasion projected to cost 132,000+ casualties", keywords: ["invasion", "casualt", "132,000", "save lives", "avoid", "downfall"],
+      hints: ["Saving American lives \u2014 avoiding an invasion projected to cost 132,000+ casualties", "Expanding US colonial territory across the whole of Asia and the Pacific", "Proving that the atomic bomb worked, purely for its own sake alone", "Punishing the entire Japanese population for starting the war"] },
+    actions: [
+      { label: "Action 1 (Truman, 14\u201315 August 1945)", answer: "Announced Japan's surrender to the public and accepted its terms", keywords: ["announce", "surrender", "public", "vj day", "terms"],
+        hints: ["Announced Japan's surrender to the public and accepted its terms", "Ordered a full-scale land invasion of Japan instead", "Negotiated a private peace treaty directly with Hirohito", "Refused to accept any terms of Japan's surrender"] },
+      { label: "Action 2 (MacArthur, 2 September 1945 onward)", answer: "Accepted the surrender, then launched Operation Blacklist to rebuild Japan", keywords: ["blacklist", "occupation", "rebuild", "demilitaris", "surrender"],
+        hints: ["Accepted the surrender, then launched Operation Blacklist", "Ordered Hirohito's execution as a convicted war criminal", "Handed full control of occupied Japan to the Soviet Union", "Immediately withdrew every US soldier from Japan"] }
+    ],
+    people: [
+      { label: "Key Person 1", answer: "Manhattan Project Scientists (built the atomic bomb)", keywords: ["manhattan", "scientist", "atomic bomb"],
+        hints: ["Manhattan Project Scientists (built the atomic bomb)", "General Korechika Anami, Japan's War Minister", "Kantaro Suzuki (Japanese Prime Minister)", "Winston Churchill (British Prime Minister)"] },
+      { label: "Key Person 2", answer: "General Douglas MacArthur (US commander)", keywords: ["macarthur"],
+        hints: ["General Douglas MacArthur (US commander)", "James Byrnes (US Secretary of State)", "Joseph Stalin (Soviet leader)", "Kantaro Suzuki (Japan's Prime Minister)"] }
+    ]
+  },
+  hirohito: {
+    label: "Emperor Hirohito",
+    values: { answer: "Kokutai and the Bushid\u014d belief that Japan had never lost a war", keywords: ["kokutai", "imperial", "sacred", "divine", "bushido", "never lost"],
+      hints: ["Kokutai and the Bushid\u014d belief that Japan had never lost a war", "Democracy and free elections for every Japanese citizen", "A full military alliance with Nazi Germany and Italy", "Further territorial expansion of the Japanese empire"] },
+    experience: { answer: "The firebombing of Tokyo and the atomic bombings of two cities", keywords: ["firebomb", "tokyo", "hiroshima", "nagasaki", "atomic", "bomb"],
+      hints: ["The firebombing of Tokyo and the atomic bombings of two cities", "Commanding Japanese troops directly on the battlefield", "Growing up abroad in the United States as a child", "Personally negotiating the 1919 Treaty of Versailles"] },
+    position: { answer: "Emperor of Japan \u2014 symbolically central, limited formal power", keywords: ["emperor"],
+      hints: ["Emperor of Japan \u2014 symbolically central, limited formal power", "President of the United States federal government", "The Supreme Commander for the Allied Powers overall", "The elected Prime Minister of wartime Japan's cabinet"] },
+    circumstances: { answer: "The Soviet invasion of Manchuria ended hopes of mediation", keywords: ["soviet", "manchuria", "mediation"],
+      hints: ["The Soviet invasion of Manchuria ended hopes of mediation", "Japan's economy was booming at the time", "Germany had only just entered the war", "The US had fully withdrawn from the Pacific"] },
+    motivation: { answer: "Preserve the imperial institution and prevent internal collapse", keywords: ["preserve", "imperial", "revolution", "collapse"],
+      hints: ["Preserve the imperial institution and prevent internal collapse", "Further expand Japan's military empire across Asia", "Personally lead Japanese troops into the battlefield", "Form a military alliance with the Soviet Union against the US"] },
+    actions: [
+      { label: "Action 1 (9\u201310 August 1945)", answer: "Broke the Big Six deadlock by personally intervening", keywords: ["big six", "deadlock", "intervene"],
+        hints: ["Broke the Big Six deadlock by personally intervening", "Ordered the military to keep fighting on", "Fled the country for personal safety", "Declared war on the Soviet Union"] },
+      { label: "Action 2 (15 August 1945)", answer: "Delivered the Jewel Voice Broadcast announcing surrender", keywords: ["jewel voice", "broadcast", "gyokuon"],
+        hints: ["Delivered the Jewel Voice Broadcast announcing surrender", "Personally signed the Potsdam Declaration", "Travelled to meet Truman in Washington", "Refused to ever address the public"] }
+    ],
+    people: [
+      { label: "Key Person 1", answer: "Kantaro Suzuki (Prime Minister)", keywords: ["suzuki"],
+        hints: ["Kantaro Suzuki (Prime Minister)", "Henry Stimson (US Secretary of War)", "Douglas MacArthur (US commander)", "James Byrnes (US Secretary of State)"] },
+      { label: "Key Person 2", answer: "Korechika Anami (War Minister, hardliner)", keywords: ["anami"],
+        hints: ["Korechika Anami (War Minister, hardliner)", "James Byrnes (US Secretary of State)", "President Harry Truman (US President)", "Winston Churchill (British Prime Minister)"] }
+    ]
+  }
+};
+
+const THINK_PROMPTS = {
+  values: "\ud83d\udcad Think about what this person or group believed was most important to protect or achieve.",
+  experience: "\ud83d\udcad Think about what this person had lived through before this moment \u2014 battles, traditions, or hardships.",
+  position: "\ud83d\udcad Think about the official role or title this person held at the time.",
+  circumstances: "\ud83d\udcad Think about what else was happening in the world at the same time, beyond this person's own choices.",
+  motivation: "\ud83d\udcad Think about what this person was most afraid of losing, or most wanted to achieve.",
+  action: "\ud83d\udcad Think about what happened around this date \u2014 check the Timeline Challenge or the site's timeline if you're not sure.",
+  person: "\ud83d\udcad Think about who this person worked closely with, or who influenced their decisions."
+};
+
+let mapState = { person: null, total: 0, correct: 0, checked: {} };
+
+function startMap(person) {
+  mapState = { person, total: 0, correct: 0, checked: {} };
+  $('map-picker').classList.add('hidden');
+  $('map-game').classList.remove('hidden');
+  const data = MAP_CONTENT[person];
+  $('map-center-node').textContent = data.label;
+
+  const shapeWrap = $('map-shape-row');
+  shapeWrap.innerHTML = '';
+  [['Values & Beliefs', data.values, 'values'], ['Experience', data.experience, 'experience'], ['Motivation', data.motivation, 'motivation']].forEach(([label, item, cat], i) => {
+    shapeWrap.appendChild(buildMapNode('shape-' + i, label, item, cat));
+  });
+
+  const posWrap = $('map-position-slot');
+  posWrap.innerHTML = '';
+  const posNode = buildMapNode('position', 'Position', data.position, 'position');
+  posNode.className += ' border-dashed bg-slate-50/60';
+  posWrap.appendChild(posNode);
+
+  const circWrap = $('map-circumstances-row');
+  circWrap.innerHTML = '';
+  const circNode = buildMapNode('circumstances', 'Wider Circumstances', data.circumstances, 'circumstances');
+  circNode.className += ' max-w-md mx-auto';
+  circWrap.appendChild(circNode);
+
+  const actionsWrap = $('map-actions-row');
+  actionsWrap.innerHTML = '';
+  data.actions.forEach((item, i) => actionsWrap.appendChild(buildMapNode('action-' + i, item.label, item, 'action')));
+
+  const peopleWrap = $('map-people-row');
+  peopleWrap.innerHTML = '';
+  data.people.forEach((item, i) => peopleWrap.appendChild(buildMapNode('person-' + i, item.label, item, 'person')));
+
+  mapState.total = 3 + 1 + 1 + data.actions.length + data.people.length; // values+experience+motivation, circumstances, position, actions, people
+
+  const saved = loadMapProgress(person);
+  if (saved && saved.checked) {
+    mapState.checked = saved.checked;
+    mapState.correct = Object.keys(saved.checked).length;
+    Object.keys(saved.checked).forEach(restoreMapNodeVisual);
+  }
+  updateMapScore();
+}
+
+function mapStorageKey(person) { return 'sg_map_progress_' + person; }
+
+function saveMapProgress() {
+  if (!mapState.person) return;
+  safeStorage.set(mapStorageKey(mapState.person), JSON.stringify({ checked: mapState.checked }));
+}
+
+function loadMapProgress(person) {
+  const raw = safeStorage.get(mapStorageKey(person));
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (e) { return null; }
+}
+
+function restoreMapNodeVisual(nodeId) {
+  const box = $('map-node-' + nodeId);
+  if (!box) return;
+  box.classList.remove('border-slate-200');
+  box.classList.add('border-emerald-500', 'bg-emerald-50');
+  const fb = $('map-fb-' + nodeId);
+  fb.className = 'text-xs font-medium flex-1 text-emerald-800';
+  fb.textContent = '✓ ' + box.dataset.answer;
+  const fbSpeaker = $('map-fb-speaker-' + nodeId);
+  if (fbSpeaker) fbSpeaker.classList.remove('hidden');
+  const input = $('map-input-' + nodeId);
+  if (input) { input.value = box.dataset.answer; input.disabled = true; }
+  document.querySelectorAll(`#map-hints-${nodeId} button`).forEach(b => b.disabled = true);
+}
+
+function resetMapProgress() {
+  if (mapState.person) safeStorage.remove(mapStorageKey(mapState.person));
+  startMap(mapState.person);
+}
+
+function buildMapNode(nodeId, label, item, category) {
+  const box = document.createElement('div');
+  box.className = 'bg-white border-2 border-slate-200 rounded-xl p-4';
+  box.id = 'map-node-' + nodeId;
+  box.innerHTML = `
+    <div class="mono text-[10px] uppercase tracking-widest text-slate-700 font-bold mb-2">${label}</div>
+    <input type="text" placeholder="Type your answer..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm mb-2" id="map-input-${nodeId}">
+    <div class="flex gap-1.5 mb-2">
+      <button class="mono text-[10px] font-bold px-2 py-1 rounded bg-whs-gold text-white" onclick="checkMapNode('${nodeId}')">Check</button>
+      <button class="mono text-[10px] font-bold px-2 py-1 rounded bg-slate-200 text-slate-800" onclick="showThinkHint('${nodeId}')">Hint</button>
+    </div>
+    <div class="hidden bg-whs-gold/10 border border-whs-gold/40 rounded-lg p-2 mb-2" id="map-think-${nodeId}">
+      <div class="flex items-start gap-2 mb-1.5">
+        <p class="text-xs text-slate-800 leading-snug flex-1" id="map-think-text-${nodeId}"></p>
+        <button class="speaker-btn" data-speak="map-think-text-${nodeId}" onclick="speakElement(this)" aria-label="Read this hint aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>
+      </div>
+      <button class="mono text-[10px] font-bold px-2 py-1 rounded bg-slate-200 text-slate-800" onclick="hintMapNode('${nodeId}')">Further Hint: Show Options</button>
+    </div>
+    <div class="hidden grid grid-cols-1 gap-1.5 mb-2" id="map-hints-${nodeId}"></div>
+    <div class="flex items-start gap-2">
+      <div class="text-xs font-medium hidden flex-1" id="map-fb-${nodeId}"></div>
+      <button class="speaker-btn hidden" id="map-fb-speaker-${nodeId}" data-speak="map-fb-${nodeId}" onclick="speakElement(this)" aria-label="Read this answer aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>
+    </div>
+  `;
+  box.dataset.answer = item.answer;
+  box.dataset.keywords = JSON.stringify(item.keywords);
+  box.dataset.hints = JSON.stringify(item.hints);
+  box.dataset.correctHint = item.hints[0]; // convention: the first hint option is always the correct one
+  box.dataset.category = category;
+  return box;
+}
+
+function showThinkHint(nodeId) {
+  const box = $('map-node-' + nodeId);
+  const think = $('map-think-' + nodeId);
+  $('map-think-text-' + nodeId).textContent = THINK_PROMPTS[box.dataset.category] || THINK_PROMPTS.values;
+  think.classList.remove('hidden');
+}
+
+function markMapNodeCorrect(nodeId, matchedText) {
+  if (mapState.checked[nodeId]) return;
+  mapState.checked[nodeId] = true;
+  mapState.correct++;
+  const box = $('map-node-' + nodeId);
+  box.classList.remove('border-slate-200');
+  box.classList.add('border-emerald-500', 'bg-emerald-50');
+  const fb = $('map-fb-' + nodeId);
+  fb.className = 'text-xs font-medium flex-1 text-emerald-800';
+  fb.textContent = '✓ ' + box.dataset.answer;
+  const fbSpeaker = $('map-fb-speaker-' + nodeId);
+  if (fbSpeaker) fbSpeaker.classList.remove('hidden');
+  $('map-input-' + nodeId).disabled = true;
+  document.querySelectorAll(`#map-hints-${nodeId} button`).forEach(b => b.disabled = true);
+  saveMapProgress();
+  updateMapScore();
+}
+
+function checkMapNode(nodeId) {
+  const box = $('map-node-' + nodeId);
+  const input = $('map-input-' + nodeId);
+  const typed = input.value.trim().toLowerCase();
+  if (!typed) return;
+  const keywords = JSON.parse(box.dataset.keywords);
+  const isCorrect = keywords.some(k => typed.includes(k.toLowerCase()));
+  if (isCorrect) {
+    markMapNodeCorrect(nodeId);
+  } else {
+    const fb = $('map-fb-' + nodeId);
+    fb.classList.remove('hidden');
+    fb.className = 'text-xs font-medium text-amber-700';
+    fb.textContent = 'Not quite — try again, or click Hint for options.';
+  }
+}
+
+function hintMapNode(nodeId) {
+  const box = $('map-node-' + nodeId);
+  const hints = JSON.parse(box.dataset.hints);
+  const hintsWrap = $('map-hints-' + nodeId);
+  hintsWrap.classList.remove('hidden');
+  hintsWrap.innerHTML = '';
+  const shuffled = [...hints].sort(() => Math.random() - 0.5);
+  shuffled.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'tile text-left bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800';
+    btn.textContent = opt;
+    btn.onclick = () => {
+      if (opt === box.dataset.correctHint) {
+        const input = $('map-input-' + nodeId);
+        if (input) input.value = box.dataset.answer;
+        markMapNodeCorrect(nodeId);
+      } else {
+        btn.classList.add('bg-red-50', 'border-red-300');
+        btn.disabled = true;
+      }
+    };
+    hintsWrap.appendChild(btn);
+  });
+}
+
+function updateMapScore() {
+  $('map-score').textContent = `Filled: ${mapState.correct} / ${mapState.total}`;
+  if (mapState.correct === mapState.total) {
+    $('map-complete-actions').classList.remove('hidden');
+    $('map-complete-actions').classList.add('flex');
+    safeStorage.set('sg_map_done_' + mapState.person, 'true');
+  }
+}
+
+function buildMapSummaryText() {
+  const data = MAP_CONTENT[mapState.person];
+  const lines = [`PERSPECTIVE MAP: ${data.label}`, ''];
+  lines.push('WHAT SHAPES THIS PERSPECTIVE');
+  lines.push(`- Values & Beliefs: ${data.values.answer}`);
+  lines.push(`- Experience: ${data.experience.answer}`);
+  lines.push(`- Motivation: ${data.motivation.answer}`);
+  lines.push('');
+  lines.push(`Position: ${data.position.answer}`);
+  lines.push('');
+  lines.push(`Wider Circumstances: ${data.circumstances.answer}`);
+  lines.push('');
+  lines.push('KEY ACTIONS');
+  data.actions.forEach(a => lines.push(`- ${a.label}: ${a.answer}`));
+  lines.push('');
+  lines.push('KEY PEOPLE');
+  data.people.forEach(p => lines.push(`- ${p.answer}`));
+  return lines.join('\n');
+}
+
+function copyMapDiagram() {
+  const text = buildMapSummaryText();
+  const btn = event.target;
+  const original = btn.textContent;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = original; }, 2000);
+    }).catch(() => { btn.textContent = 'Copy failed'; setTimeout(() => { btn.textContent = original; }, 2000); });
+  } else {
+    btn.textContent = 'Not supported';
+    setTimeout(() => { btn.textContent = original; }, 2000);
+  }
+}
+
+function printMapDiagram() {
+  window.print();
+}
+
+function $(id) { return document.getElementById(id); }
+
+// ---- Safe storage: falls back to an in-memory object if localStorage is unavailable ----
+const safeStorage = (() => {
+  const memory = {};
+  let works = false;
+  try {
+    const testKey = '__sg_test__';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    works = true;
+  } catch (e) { works = false; }
+  return {
+    get(key) {
+      if (works) { try { return localStorage.getItem(key); } catch (e) { return memory[key] || null; } }
+      return memory[key] || null;
+    },
+    set(key, value) {
+      if (works) { try { localStorage.setItem(key, value); return; } catch (e) {} }
+      memory[key] = value;
+    },
+    remove(key) {
+      if (works) { try { localStorage.removeItem(key); return; } catch (e) {} }
+      delete memory[key];
+    }
+  };
+})();
+function showScreen(id) {
+  stopSpeaking();
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function backToHub() { showScreen('screen-hub'); updateQuizLockState(); }
+
+// ---- Final Quiz lock state ----
+function getCompletionStatus() {
+  return {
+    quotes: safeStorage.get('sg_detective_all_done') === 'true',
+    paragraph: safeStorage.get('sg_paragraph_done_usAdmin') === 'true' && safeStorage.get('sg_paragraph_done_hirohito') === 'true',
+    timeline: safeStorage.get('sg_timeline_done') === 'true',
+    map: safeStorage.get('sg_map_done_usAdmin') === 'true' && safeStorage.get('sg_map_done_hirohito') === 'true',
+    commission: safeStorage.get('sg_co_done') === 'true'
+  };
+}
+
+function allActivitiesComplete() {
+  const s = getCompletionStatus();
+  return s.quotes && s.paragraph && s.timeline && s.map && s.commission;
+}
+
+function missingActivityNames() {
+  const s = getCompletionStatus();
+  const names = [];
+  if (!s.quotes) names.push('Quotes (finish all 15 cases)');
+  if (!s.paragraph) names.push('Build-a-Paragraph (check both US Administration and Hirohito)');
+  if (!s.timeline) names.push('Timeline Challenge (check your answer)');
+  if (!s.map) names.push('Perspective Map (fill in all 9 boxes for both US Administration and Hirohito)');
+  if (!s.commission) names.push('Commission or Omission (check your sorting)');
+  return names;
+}
+
+function updateQuizLockState() {
+  const unlocked = allActivitiesComplete();
+  const card = $('quiz-hub-card');
+  const lockMsg = $('quiz-lock-message');
+  if (!card) return;
+  if (unlocked) {
+    card.classList.remove('opacity-50', 'cursor-not-allowed');
+    card.classList.add('cursor-pointer');
+    $('quiz-lock-icon').textContent = '🏆';
+    $('quiz-lock-status').textContent = 'Unlocked \u2014 ready when you are';
+    $('quiz-lock-status').className = 'text-emerald-700 text-xs font-bold mt-2';
+    lockMsg.classList.add('hidden');
+  } else {
+    card.classList.add('opacity-50', 'cursor-not-allowed');
+    card.classList.remove('cursor-pointer');
+    $('quiz-lock-icon').textContent = '🔒';
+    $('quiz-lock-status').textContent = 'Locked \u2014 complete all five activities above first';
+    $('quiz-lock-status').className = 'text-slate-600 text-xs font-bold mt-2';
+  }
+}
+
+function tryOpenQuiz() {
+  if (allActivitiesComplete()) {
+    openGame('quiz');
+  } else {
+    const lockMsg = $('quiz-lock-message');
+    lockMsg.classList.remove('hidden');
+    lockMsg.innerHTML = '<strong>Still to do:</strong><ul class="list-disc list-inside mt-1">' +
+      missingActivityNames().map(n => `<li>${n}</li>`).join('') + '</ul>';
+  }
+}
+
+// ---- Text-to-speech (reads information aloud; never used on clickable answer options) ----
+function stopSpeaking() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  document.querySelectorAll('.speaker-btn.speaking').forEach(b => b.classList.remove('speaking'));
+}
+
+function speakElement(btn) {
+  if (!('speechSynthesis' in window)) {
+    btn.disabled = true;
+    btn.title = 'Text-to-speech is not supported in this browser';
+    return;
+  }
+  const wasSpeaking = btn.classList.contains('speaking');
+  stopSpeaking();
+  if (wasSpeaking) return;
+
+  const targetId = btn.getAttribute('data-speak');
+  const text = ($(targetId) || {}).textContent || '';
+  if (!text.trim()) return;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.95;
+  btn.classList.add('speaking');
+  utter.onend = () => btn.classList.remove('speaking');
+  utter.onerror = () => btn.classList.remove('speaking');
+  window.speechSynthesis.speak(utter);
+}
+
+function speakerBtnHTML(targetId, extraOnclick) {
+  const onclick = extraOnclick ? `${extraOnclick} speakElement(this);` : 'speakElement(this);';
+  return `<button class="speaker-btn shrink-0" data-speak="${targetId}" onclick="${onclick}" aria-label="Read this aloud" title="Read aloud"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg></button>`;
+}
+
+function openGame(key) {
+  showScreen('screen-' + key);
+  if (key === 'detective') startDetective();
+  if (key === 'timeline') startTimeline();
+  if (key === 'commission') startCommissionOmission();
+  if (key === 'quiz') startFinalQuiz();
+}
+
+// ============================================================
+// GAME 5: COMMISSION OR OMISSION?
+// ============================================================
+const COMMISSION_OMISSION_ITEMS = [
+  { id: "h-c-1", side: "🇯🇵", type: "commission", text: "Delivered the Jewel Voice Broadcast, breaking the council deadlock to accept surrender (15 Aug 1945)." },
+  { id: "h-c-2", side: "🇯🇵", type: "commission", text: "Issued the Humanity Declaration (1946), renouncing the concept of imperial divinity." },
+  { id: "h-c-3", side: "🇯🇵", type: "commission", text: "Toured the country extensively after the war, reshaping his public image into a peaceful monarch." },
+  { id: "h-o-1", side: "🇯🇵", type: "omission", text: "Never abdicated the throne, despite internal and international pressure to do so.",
+    why: "By staying on the throne rather than stepping down, Hirohito preserved the continuity of the Imperial line \u2014 exactly what he had intervened to protect in the first place." },
+  { id: "h-o-2", side: "🇯🇵", type: "omission", text: "Never personally apologised or admitted legal responsibility for wartime atrocities.",
+    why: "His silence on personal guilt protected the Imperial institution from being tied to war crimes \u2014 a deliberate omission that shaped how Japan would remember, and not remember, the war." },
+  { id: "h-o-3", side: "🇯🇵", type: "omission", text: "Allowed Tojo and other generals to bear the legal blame at the Tokyo Trials.",
+    why: "By staying silent while military leaders were prosecuted in his place, Hirohito let the Kokutai survive largely untouched \u2014 someone still had to answer for the war, just not him." },
+  { id: "u-c-1", side: "🇺🇸", type: "commission", text: "Authorised the atomic bombings of Hiroshima and Nagasaki to force a swift surrender." },
+  { id: "u-c-2", side: "🇺🇸", type: "commission", text: "Drafted the 1947 Constitution, including Article 9's permanent renunciation of war." },
+  { id: "u-c-3", side: "🇺🇸", type: "commission", text: "Held the Tokyo Trials (1946\u201348), prosecuting 28 military and political leaders." },
+  { id: "u-o-1", side: "🇺🇸", type: "omission", text: "Deliberately excluded Emperor Hirohito from prosecution at the Tokyo Trials.",
+    why: "MacArthur judged that keeping Hirohito out of the dock \u2014 and out of the story of Japanese guilt \u2014 was essential to a stable, cooperative occupation. What the US chose not to prosecute shaped postwar Japan as much as what it did prosecute." },
+  { id: "u-o-2", side: "🇺🇸", type: "omission", text: "Granted immunity to Unit 731's biological and chemical warfare leaders in exchange for their research data.",
+    why: "Choosing silence over prosecution here traded justice for scientific and strategic advantage \u2014 an omission with real victims that rarely appears in the standard narrative of a \u201cclean\u201d occupation." },
+  { id: "u-o-3", side: "🇺🇸", type: "omission", text: "Excluded the Soviet Union from any real control over the occupation of Japan.",
+    why: "By not sharing occupation authority the way it had in Germany, the US secured unilateral control of postwar Japan \u2014 a Cold War-shaping choice made through exclusion, not announcement." }
+];
+
+let coState = { placements: {}, selected: null };
+
+function startCommissionOmission() {
+  coState = { placements: {}, selected: null };
+  $('co-commission-bucket').innerHTML = '';
+  $('co-omission-bucket').innerHTML = '';
+  $('co-feedback').classList.add('hidden');
+  $('co-reflection').classList.add('hidden');
+  $('co-score').textContent = '';
+
+  const pool = $('co-pool');
+  pool.innerHTML = '';
+  const shuffled = [...COMMISSION_OMISSION_ITEMS].sort(() => Math.random() - 0.5);
+  shuffled.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'tile text-left bg-white border-2 border-slate-200 rounded-lg p-3 text-xs text-slate-800 leading-relaxed';
+    btn.innerHTML = `<span class="mono text-[10px] text-slate-600">${item.side}</span> ${item.text}`;
+    btn.dataset.id = item.id;
+    btn.onclick = (e) => { e.stopPropagation(); selectCOItem(item.id, btn); };
+    pool.appendChild(btn);
+  });
+
+  const savedPlacements = loadCOProgress();
+  if (savedPlacements) {
+    Object.keys(savedPlacements).forEach(id => restoreCOItem(id, savedPlacements[id]));
+  }
+}
+
+function saveCOProgress() {
+  safeStorage.set('sg_co_progress', JSON.stringify(coState.placements));
+}
+
+function loadCOProgress() {
+  const raw = safeStorage.get('sg_co_progress');
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (e) { return null; }
+}
+
+function restoreCOItem(id, bucketType) {
+  const item = COMMISSION_OMISSION_ITEMS.find(i => i.id === id);
+  if (!item) return;
+  coState.placements[id] = bucketType;
+  const bucketEl = bucketType === 'commission' ? $('co-commission-bucket') : $('co-omission-bucket');
+  const chip = document.createElement('div');
+  chip.className = 'bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800';
+  chip.id = 'co-placed-' + id;
+  chip.innerHTML = `<span class="mono text-[10px] text-slate-600">${item.side}</span> ${item.text}`;
+  bucketEl.appendChild(chip);
+  const poolBtn = document.querySelector(`#co-pool .tile[data-id="${CSS.escape(id)}"]`);
+  if (poolBtn) poolBtn.classList.add('placed', 'hidden');
+}
+
+function resetCOProgress() {
+  safeStorage.remove('sg_co_progress');
+  startCommissionOmission();
+}
+
+function selectCOItem(id, btnEl) {
+  if (btnEl.classList.contains('placed')) return;
+  document.querySelectorAll('#co-pool .tile').forEach(b => b.classList.remove('selected'));
+  if (coState.selected === id) { coState.selected = null; return; }
+  coState.selected = id;
+  btnEl.classList.add('selected');
+}
+
+function placeInBucket(bucketType) {
+  if (!coState.selected) return;
+  const id = coState.selected;
+  const item = COMMISSION_OMISSION_ITEMS.find(i => i.id === id);
+  coState.placements[id] = bucketType;
+
+  const bucketEl = bucketType === 'commission' ? $('co-commission-bucket') : $('co-omission-bucket');
+  const chip = document.createElement('div');
+  chip.className = 'bg-white border border-slate-200 rounded-lg p-2 text-xs text-slate-800';
+  chip.id = 'co-placed-' + id;
+  chip.innerHTML = `<span class="mono text-[10px] text-slate-600">${item.side}</span> ${item.text}`;
+  bucketEl.appendChild(chip);
+
+  const poolBtn = document.querySelector(`#co-pool .tile[data-id="${CSS.escape(id)}"]`);
+  poolBtn.classList.add('placed', 'hidden');
+  coState.selected = null;
+  saveCOProgress();
+}
+
+function checkCommissionOmission() {
+  safeStorage.set('sg_co_done', 'true');
+  let correct = 0;
+  let placedCount = 0;
+  COMMISSION_OMISSION_ITEMS.forEach(item => {
+    const placedType = coState.placements[item.id];
+    const chip = document.getElementById('co-placed-' + item.id);
+    if (!chip) return;
+    placedCount++;
+    const isCorrect = placedType === item.type;
+    if (isCorrect) correct++;
+    chip.classList.remove('border-slate-200');
+    chip.classList.add(isCorrect ? 'border-emerald-500' : 'border-red-500');
+    chip.style.borderWidth = '2px';
+    if (item.type === 'omission') {
+      const whyId = 'co-why-' + item.id;
+      const wrap = document.createElement('div');
+      wrap.className = 'flex items-start gap-2 mt-1';
+      const why = document.createElement('p');
+      why.className = 'text-[10px] text-slate-700 italic flex-1';
+      why.id = whyId;
+      why.textContent = (isCorrect ? 'Why this matters: ' : 'This is actually an Act of Omission \u2014 ') + item.why;
+      const speakBtn = document.createElement('button');
+      speakBtn.className = 'speaker-btn';
+      speakBtn.style.width = '1.4rem';
+      speakBtn.style.height = '1.4rem';
+      speakBtn.setAttribute('data-speak', whyId);
+      speakBtn.setAttribute('aria-label', 'Read this explanation aloud');
+      speakBtn.setAttribute('title', 'Read aloud');
+      speakBtn.onclick = () => speakElement(speakBtn);
+      speakBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.5 8.5a5 5 0 010 7M18 6a9 9 0 010 12"/></svg>';
+      wrap.appendChild(why);
+      wrap.appendChild(speakBtn);
+      chip.appendChild(wrap);
+    }
+  });
+
+  $('co-score').textContent = `Sorted correctly: ${correct} / ${COMMISSION_OMISSION_ITEMS.length} (${placedCount} placed)`;
+
+  const fb = $('co-feedback');
+  fb.classList.remove('hidden');
+  const allCorrect = correct === COMMISSION_OMISSION_ITEMS.length;
+  fb.innerHTML = `<div class="mono text-[10px] uppercase tracking-widest font-bold mb-2 ${allCorrect ? 'text-emerald-700' : 'text-amber-700'}">${allCorrect ? '✓ Perfect Sort' : 'Check the marked cards above'}</div><p class="text-sm text-slate-800">Every Act of Omission above now shows why that silence or inaction mattered historically \u2014 that's the real skill here, not just sorting facts correctly.</p>`;
+
+  $('co-reflection').classList.remove('hidden');
+}
+
+function copyReflection() {
+  const text = $('co-reflection-text').value.trim();
+  const btn = event.target;
+  const original = btn.textContent;
+  if (!text) { btn.textContent = 'Write something first!'; setTimeout(() => { btn.textContent = original; }, 2000); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = original; }, 2000);
+    }).catch(() => { btn.textContent = 'Copy failed'; setTimeout(() => { btn.textContent = original; }, 2000); });
+  }
+}
+
+function printReflection() {
+  window.print();
+}
+
+// ============================================================
+// FINAL QUIZ (locked until all 5 activities are complete)
+// ============================================================
+const FQ_MC = [
+  { q: "What date was the Potsdam Declaration issued?", options: ["26 July 1945", "6 August 1945", "9 August 1945", "15 August 1945"], correct: 0 },
+  { q: "What date was the atomic bomb dropped on Hiroshima?", options: ["26 July 1945", "6 August 1945", "9 August 1945", "2 September 1945"], correct: 1 },
+  { q: "What date did the Soviet Union declare war on Japan?", options: ["6 August 1945", "8 August 1945", "14 August 1945", "2 September 1945"], correct: 1 },
+  { q: "What date was the atomic bomb dropped on Nagasaki?", options: ["6 August 1945", "8 August 1945", "9 August 1945", "15 August 1945"], correct: 2 },
+  { q: "On what date did Hirohito personally intervene to break the Big Six deadlock?", options: ["6 August 1945", "9\u201310 August 1945", "14\u201315 August 1945", "2 September 1945"], correct: 1 },
+  { q: "What date was the Jewel Voice Broadcast delivered?", options: ["9 August 1945", "11 August 1945", "15 August 1945", "27 September 1945"], correct: 2 },
+  { q: "What date was Japan's formal surrender signed aboard USS Missouri?", options: ["15 August 1945", "1 September 1945", "2 September 1945", "1 January 1946"], correct: 2 },
+  { q: "Who was President of the United States in August 1945?", options: ["Franklin D. Roosevelt", "Harry S. Truman", "Dwight Eisenhower", "Douglas MacArthur"], correct: 1 },
+  { q: "Who was Emperor of Japan in August 1945?", options: ["Hirohito", "Meiji", "Hirobumi", "Showa Suzuki"], correct: 0 },
+  { q: "Who was Japan's Prime Minister at the time of the surrender?", options: ["Korechika Anami", "Kantaro Suzuki", "Shigenori Togo", "Hideki Tojo"], correct: 1 },
+  { q: "Who was Japan's War Minister and a leading hardliner against surrender?", options: ["Kantaro Suzuki", "Shigenori Togo", "Korechika Anami", "Kido Koichi"], correct: 2 },
+  { q: "Who was the US Secretary of War who argued for retaining the Emperor's symbolic role?", options: ["James Byrnes", "Henry Stimson", "William Leahy", "Dwight Eisenhower"], correct: 1 },
+  { q: "Who was appointed Supreme Commander for the Allied Powers to lead the occupation of Japan?", options: ["Harry Truman", "Henry Stimson", "Douglas MacArthur", "Dwight Eisenhower"], correct: 2 },
+  { q: "Which admiral argued the atomic bombings were militarily unnecessary?", options: ["Admiral Leahy", "Admiral Nimitz", "Admiral Yamamoto", "Admiral Halsey"], correct: 0 },
+  { q: "What term describes Japan's sacred national essence, centred on the Emperor?", options: ["Bushido", "Kokutai", "Shogunate", "Gyokusai"], correct: 1 },
+  { q: "What ambiguous Japanese word was used to respond to the Potsdam Declaration?", options: ["Kamikaze", "Mokusatsu", "Kokutai", "Gyokuon"], correct: 1 },
+  { q: "What was the codename for the planned US invasion of Japan?", options: ["Operation Blacklist", "Operation Overlord", "Operation Downfall", "Operation Torch"], correct: 2 },
+  { q: "What was the name of MacArthur's plan to occupy and rebuild postwar Japan?", options: ["Operation Downfall", "Operation Blacklist", "Operation Ketsu-Go", "Operation Coronet"], correct: 1 },
+  { q: "What US document, drafted during the occupation, included Article 9's renunciation of war?", options: ["The Potsdam Declaration", "The Byrnes Note", "The 1947 Constitution", "The Humanity Declaration"], correct: 2 },
+  { q: "What trials (1946\u201348) prosecuted Japanese wartime leaders, executing seven?", options: ["The Nuremberg Trials", "The Tokyo Trials", "The Manchuria Trials", "The Potsdam Trials"], correct: 1 },
+  { q: "What 1946 declaration did Hirohito issue, renouncing the concept of imperial divinity?", options: ["The Humanity Declaration", "The Potsdam Declaration", "The Byrnes Note", "The Instrument of Surrender"], correct: 0 },
+  { q: "What was the US Administration's core doctrine, declared by Roosevelt in 1943?", options: ["Manifest Destiny", "Unconditional Surrender", "Containment", "The Domino Theory"], correct: 1 },
+  { q: "What speech framework did Roosevelt use to describe the democratic aims of the war?", options: ["The Fourteen Points", "The Four Freedoms", "The New Deal", "The Atlantic Charter"], correct: 1 },
+  { q: "What Japanese military code valued death in battle over surrender?", options: ["Kokutai", "Shinto", "Bushid\u014d", "Gyokusai"], correct: 2 },
+  { q: "What was Hirohito's central motivation for intervening to end the war?", options: ["Expanding the empire further", "Preserving the imperial institution", "Allying with the Soviet Union", "Personal safety alone"], correct: 1 },
+  { q: "What was Truman's central motivation for authorising the atomic bombs?", options: ["Punishing Japanese civilians for the war", "Saving American lives by avoiding an invasion", "Proving the weapon worked in real conditions", "Expanding US territory across the Pacific"], correct: 1 },
+  { q: "Roughly how many US casualties were projected for a full invasion of Japan?", options: ["13,000+", "50,000+", "132,000+", "1,000+"], correct: 2 },
+  { q: "What US body studied radiation's effects on Hiroshima and Nagasaki survivors, but was controversial for not treating them?", options: ["The Manhattan Project scientists", "The Atomic Bomb Casualty Commission", "The Tokyo Trials tribunal", "Unit 731 research group"], correct: 1 },
+  { q: "Whose invasion of Manchuria removed Japan's last hope of a negotiated peace?", options: ["China", "The Soviet Union", "Britain", "The United States"], correct: 1 }
+];
+
+const FQ_FILL = [
+  { text: "The Potsdam Declaration warned Japan to expect \u201cprompt and utter ___.\u201d", answer: "destruction", options: ["destruction", "negotiation", "retreat", "surrender"] },
+  { text: "Truman warned Japan to expect a \u201c___ of ruin from the air.\u201d", answer: "rain", options: ["rain", "storm", "wave", "flood"] },
+  { text: "Hirohito described surrender as \u201cenduring the ___.\u201d", answer: "unendurable", options: ["unendurable", "victorious", "inevitable", "honourable"] },
+  { text: "The US Administration's founding doctrine was \u201c___ Surrender.\u201d", answer: "Unconditional", options: ["Unconditional", "Conditional", "Formal", "Negotiated"] },
+  { text: "Japan's government responded to Potsdam with the ambiguous word \u201c___.\u201d", answer: "mokusatsu", options: ["mokusatsu", "gyokusai", "bushid\u014d", "kokutai"] },
+  { text: "Emperor Hirohito's radio address announcing surrender is known as the \u201c___ Voice Broadcast.\u201d", answer: "Jewel", options: ["Jewel", "Imperial", "Sacred", "Royal"] },
+  { text: "The atomic bomb was developed under the ___ Project.", answer: "Manhattan", options: ["Manhattan", "Trinity", "Overlord", "Pacific"] },
+  { text: "MacArthur's plan to occupy and rebuild Japan was called Operation ___.", answer: "Blacklist", options: ["Blacklist", "Downfall", "Coronet", "Olympic"] },
+  { text: "Article ___ of the 1947 Constitution permanently renounced war.", answer: "9", options: ["9", "1", "5", "12"] },
+  { text: "Japan's deadlocked 3\u20133 war council was known as the \u201c___ ___.\u201d", answer: "Big Six", options: ["Big Six", "War Council", "Supreme Council", "Inner Cabinet"] },
+  { text: "Japan's sacred national essence, centred on the Emperor, is called ___.", answer: "Kokutai", options: ["Kokutai", "Bushid\u014d", "Shinto", "Gyokusai"] },
+  { text: "The attempted coup to stop the surrender broadcast is known as the ___ incident.", answer: "Ky\u016bj\u014d", options: ["Ky\u016bj\u014d", "Manchuria", "Okinawa", "Nagasaki"] }
+];
+
+const FQ_MATCH_ROUNDS = [
+  {
+    title: "Match the person to their role",
+    pairs: [
+      { left: "Harry Truman", right: "President of the United States" },
+      { left: "Douglas MacArthur", right: "Supreme Commander for the Allied Powers" },
+      { left: "Kantaro Suzuki", right: "Prime Minister of Japan" },
+      { left: "Korechika Anami", right: "Japan's War Minister" },
+      { left: "Henry Stimson", right: "US Secretary of War" }
+    ]
+  },
+  {
+    title: "Match the date to the event",
+    pairs: [
+      { left: "26 July 1945", right: "Potsdam Declaration issued" },
+      { left: "6 August 1945", right: "Hiroshima bombed" },
+      { left: "9 August 1945", right: "Nagasaki bombed & Soviet invasion of Manchuria" },
+      { left: "15 August 1945", right: "Jewel Voice Broadcast" },
+      { left: "2 September 1945", right: "Formal surrender signed" }
+    ]
+  }
+];
+
+// Build the full 50-item quiz question list
+function buildFinalQuizBank() {
+  const items = [];
+  FQ_MC.forEach(q => items.push({ type: 'mc', ...q }));
+  FQ_FILL.forEach(q => items.push({ type: 'fill', ...q }));
+  FQ_MATCH_ROUNDS.forEach(r => items.push({ type: 'match', ...r }));
+  return items;
+}
+
+let fqState = { bank: [], index: 0, score: 0, totalPoints: 0, answered: false, matchState: null };
+
+function startFinalQuiz() {
+  const bank = buildFinalQuizBank().sort(() => Math.random() - 0.5);
+  const totalPoints = bank.reduce((sum, q) => sum + (q.type === 'match' ? q.pairs.length : 1), 0);
+  fqState = { bank, index: 0, score: 0, totalPoints, answered: false, matchState: null };
+  $('fq-feedback').classList.add('hidden');
+  $('fq-next-btn').classList.add('hidden');
+  renderFinalQuizQuestion();
+}
+
+function renderFinalQuizQuestion() {
+  const q = fqState.bank[fqState.index];
+  fqState.answered = false;
+  $('fq-progress').textContent = `Question ${fqState.index + 1} of ${fqState.bank.length}`;
+  $('fq-score').textContent = `Score: ${fqState.score} / ${fqState.totalPoints}`;
+  $('fq-feedback').classList.add('hidden');
+  $('fq-next-btn').classList.add('hidden');
+
+  const area = $('fq-answer-area');
+  area.innerHTML = '';
+
+  if (q.type === 'mc') {
+    $('fq-type-label').textContent = 'Multiple Choice';
+    $('fq-question').textContent = q.q;
+    const optionsShuffled = q.options.map((text, i) => ({ text, isCorrect: i === q.correct }));
+    optionsShuffled.sort(() => Math.random() - 0.5);
+    const grid = document.createElement('div');
+    grid.className = 'grid sm:grid-cols-2 gap-2';
+    optionsShuffled.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'tile text-left bg-white border-2 border-slate-200 rounded-lg p-3 text-sm text-slate-800';
+      btn.textContent = opt.text;
+      btn.dataset.correct = opt.isCorrect ? 'true' : 'false';
+      btn.onclick = () => {
+        if (btn.classList.contains('reveal-correct')) { acknowledgeCorrectTile(btn); }
+        else { answerFinalQuizMC(opt.isCorrect, btn); }
+      };
+      grid.appendChild(btn);
+    });
+    area.appendChild(grid);
+  } else if (q.type === 'fill') {
+    $('fq-type-label').textContent = 'Fill in the Gap';
+    $('fq-question').textContent = q.text;
+    const fillOptions = q.options.map(text => ({ text, isCorrect: text === q.answer }));
+    fillOptions.sort(() => Math.random() - 0.5);
+    const grid = document.createElement('div');
+    grid.className = 'grid sm:grid-cols-2 gap-2';
+    fillOptions.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'tile text-left bg-white border-2 border-slate-200 rounded-lg p-3 text-sm text-slate-800';
+      btn.textContent = opt.text;
+      btn.dataset.correct = opt.isCorrect ? 'true' : 'false';
+      btn.onclick = () => {
+        if (btn.classList.contains('reveal-correct')) { acknowledgeCorrectTile(btn); }
+        else { answerFinalQuizFill(opt.isCorrect, btn); }
+      };
+      grid.appendChild(btn);
+    });
+    area.appendChild(grid);
+  } else if (q.type === 'match') {
+    $('fq-type-label').textContent = 'Match the Following';
+    $('fq-question').textContent = q.title;
+    fqState.matchState = { pairs: q.pairs, selectedLeft: null, matched: {} };
+    renderMatchRound(q);
+  }
+}
+
+function answerFinalQuizMC(isCorrect, btnEl) {
+  if (fqState.answered) return;
+  if (isCorrect) {
+    fqState.answered = true;
+    fqState.score++;
+    document.querySelectorAll('#fq-answer-area .tile').forEach(b => { b.disabled = true; });
+    btnEl.classList.add('correct');
+    showFinalQuizFeedback(true);
+  } else {
+    // Wrong: mark this pick red, disable it, but leave the correct option clickable
+    btnEl.classList.add('incorrect');
+    btnEl.disabled = true;
+    document.querySelectorAll('#fq-answer-area .tile').forEach(b => {
+      if (b.dataset.correct === 'true') b.classList.add('reveal-correct');
+    });
+    showWrongAnswerPrompt();
+  }
+}
+
+function acknowledgeCorrectTile(btnEl) {
+  if (fqState.answered) return;
+  fqState.answered = true;
+  document.querySelectorAll('#fq-answer-area .tile').forEach(b => { b.disabled = true; });
+  btnEl.classList.remove('reveal-correct');
+  btnEl.classList.add('correct');
+  showFinalQuizFeedback(false, null, true);
+}
+
+function showWrongAnswerPrompt() {
+  const fb = $('fq-feedback');
+  fb.classList.remove('hidden');
+  fb.innerHTML = `<div class="mono text-[10px] uppercase tracking-widest font-bold text-amber-700">Not quite</div><p class="text-sm text-slate-800 mt-1">Click the correct answer above to continue.</p>`;
+  $('fq-score').textContent = `Score: ${fqState.score} / ${fqState.totalPoints}`;
+}
+
+function answerFinalQuizFill(isCorrect, btnEl) {
+  if (fqState.answered) return;
+  if (isCorrect) {
+    fqState.answered = true;
+    fqState.score++;
+    document.querySelectorAll('#fq-answer-area .tile').forEach(b => { b.disabled = true; });
+    btnEl.classList.add('correct');
+    showFinalQuizFeedback(true);
+  } else {
+    btnEl.classList.add('incorrect');
+    btnEl.disabled = true;
+    document.querySelectorAll('#fq-answer-area .tile').forEach(b => {
+      if (b.dataset.correct === 'true') b.classList.add('reveal-correct');
+    });
+    showWrongAnswerPrompt();
+  }
+}
+
+function renderMatchRound(q) {
+  const area = $('fq-answer-area');
+  const lefts = [...q.pairs].sort(() => Math.random() - 0.5);
+  const rights = [...q.pairs].sort(() => Math.random() - 0.5);
+  area.innerHTML = `
+    <div class="grid grid-cols-2 gap-5">
+      <div class="space-y-2" id="fq-match-left"></div>
+      <div class="space-y-2" id="fq-match-right"></div>
+    </div>
+    <button class="mono text-sm font-bold px-6 py-3 rounded-lg bg-whs-gold text-white shadow-md hover:brightness-110 transition mt-4" onclick="checkMatchRound()">Check Matches</button>
+  `;
+  const leftWrap = $('fq-match-left');
+  lefts.forEach(pair => {
+    const btn = document.createElement('button');
+    btn.className = 'tile w-full text-left bg-white border-2 border-slate-200 rounded-lg p-2 text-xs text-slate-800';
+    btn.textContent = pair.left;
+    btn.dataset.left = pair.left;
+    btn.onclick = () => selectMatchLeft(pair.left, btn);
+    leftWrap.appendChild(btn);
+  });
+  const rightWrap = $('fq-match-right');
+  rights.forEach(pair => {
+    const btn = document.createElement('button');
+    btn.className = 'tile w-full text-left bg-white border-2 border-slate-200 rounded-lg p-2 text-xs text-slate-800';
+    btn.textContent = pair.right;
+    btn.dataset.right = pair.right;
+    btn.onclick = () => selectMatchRight(pair.right, btn);
+    rightWrap.appendChild(btn);
+  });
+}
+
+function selectMatchLeft(left, btnEl) {
+  if (btnEl.classList.contains('placed')) return;
+  document.querySelectorAll('#fq-match-left .tile').forEach(b => b.classList.remove('selected'));
+  fqState.matchState.selectedLeft = left;
+  btnEl.classList.add('selected');
+}
+
+function selectMatchRight(right, btnEl) {
+  if (btnEl.classList.contains('placed')) return;
+  if (!fqState.matchState.selectedLeft) return;
+  const left = fqState.matchState.selectedLeft;
+  fqState.matchState.matched[left] = right;
+  document.querySelector(`#fq-match-left .tile[data-left="${CSS.escape(left)}"]`).classList.add('placed', 'selected');
+  btnEl.classList.add('placed');
+  fqState.matchState.selectedLeft = null;
+}
+
+function checkMatchRound() {
+  const q = fqState.bank[fqState.index];
+  let correctCount = 0;
+  q.pairs.forEach(pair => {
+    const matchedRight = fqState.matchState.matched[pair.left];
+    const isCorrect = matchedRight === pair.right;
+    if (isCorrect) correctCount++;
+    const leftBtn = document.querySelector(`#fq-match-left .tile[data-left="${CSS.escape(pair.left)}"]`);
+    if (leftBtn) leftBtn.classList.add(isCorrect ? 'correct' : 'incorrect');
+  });
+  fqState.score += correctCount;
+  document.querySelectorAll('#fq-answer-area button').forEach(b => b.disabled = true);
+
+  if (correctCount === q.pairs.length) {
+    fqState.answered = true;
+    showFinalQuizFeedback(true, `All ${q.pairs.length} pairs matched correctly.`);
+  } else {
+    const correctList = q.pairs.map(p => `${p.left} → ${p.right}`).join('<br>');
+    const fb = $('fq-feedback');
+    fb.classList.remove('hidden');
+    fb.innerHTML = `
+      <div class="mono text-[10px] uppercase tracking-widest font-bold text-amber-700">Not quite \u2014 ${correctCount} of ${q.pairs.length} correct</div>
+      <p class="text-sm text-slate-800 mt-2 mb-3 leading-relaxed">${correctList}</p>
+      <button class="mono text-sm font-bold px-5 py-2.5 rounded-lg bg-whs-gold text-white shadow-md hover:brightness-110 transition" onclick="acknowledgeMatchRound()">OK, Got It →</button>
+    `;
+    $('fq-score').textContent = `Score: ${fqState.score} / ${fqState.totalPoints}`;
+  }
+}
+
+function acknowledgeMatchRound() {
+  fqState.answered = true;
+  showFinalQuizFeedback(false, null, true);
+}
+
+function showFinalQuizFeedback(allCorrect, note, wasAcknowledged) {
+  const fb = $('fq-feedback');
+  fb.classList.remove('hidden');
+  const label = wasAcknowledged ? '✓ Got it' : (allCorrect ? '✓ Correct' : 'Not quite');
+  const colorClass = wasAcknowledged ? 'text-slate-700' : (allCorrect ? 'text-emerald-700' : 'text-amber-700');
+  fb.innerHTML = `<div class="mono text-[10px] uppercase tracking-widest font-bold ${colorClass}">${label}</div>${note ? `<p class="text-sm text-slate-800 mt-1">${note}</p>` : ''}`;
+  $('fq-score').textContent = `Score: ${fqState.score} / ${fqState.totalPoints}`;
+  $('fq-next-btn').classList.remove('hidden');
+  $('fq-next-btn').textContent = fqState.index >= fqState.bank.length - 1 ? 'See Final Result →' : 'Next Question →';
+}
+
+function fqNext() {
+  if (fqState.index >= fqState.bank.length - 1) {
+    showFinalQuizResultModal();
+    return;
+  }
+  fqState.index++;
+  renderFinalQuizQuestion();
+}
+
+function showFinalQuizResultModal() {
+  const pct = Math.round((fqState.score / fqState.totalPoints) * 100);
+  $('fq-result-percent').textContent = pct + '%';
+  $('fq-result-raw').textContent = `${fqState.score} out of ${fqState.totalPoints} correct`;
+  const modal = $('fq-result-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function retakeFinalQuiz() {
+  const modal = $('fq-result-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  startFinalQuiz();
+}
+
+function closeFinalQuizModal() {
+  const modal = $('fq-result-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  backToHub();
+}
+
+updateQuizLockState();
+</script>
+</body>
+</html>
